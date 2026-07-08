@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Plane Tracker · Budapest</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
+</head>
+<body>
+  <div id="map"></div>
+  <div id="vignette"></div>
+
+  <!-- Focused plane info panel -->
+  <div id="info-panel" class="hidden">
+    <div class="info-header">
+      <img id="info-logo" class="airline-logo hidden" alt="" />
+      <span id="info-callsign">—</span>
+      <span id="info-badge" class="badge"></span>
+    </div>
+    <div id="info-photo-wrap" class="hidden">
+      <img id="info-photo" alt="" />
+      <a id="info-photo-credit" target="_blank" rel="noopener"></a>
+    </div>
+      <div class="info-rows">
+      <div class="info-row"><span class="label" data-i18n="labelAirline">Airline</span><span id="info-airline">—</span></div>
+      <div class="info-row"><span class="label" data-i18n="labelAircraft">Aircraft</span><span id="info-actype">—</span></div>
+      <div class="info-row"><span class="label" data-i18n="labelReg">Reg</span><span id="info-reg">—</span></div>
+      <div class="info-row"><span class="label" data-i18n="labelRoute">Route</span><span id="info-route">—</span></div>
+      <div class="info-row"><span class="label" data-i18n="labelAltitude">Altitude</span><span id="info-alt">—</span></div>
+      <div class="info-row"><span class="label" data-i18n="labelSpeed">Speed</span><span id="info-speed">—</span></div>
+      <div class="info-row"><span class="label" data-i18n="labelDistance">Distance</span><span id="info-dist">—</span></div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div id="status-bar">
+    <span id="conn-dot" class="conn-dot" data-i18n-title="connecting" title="Connecting…"></span>
+    <span id="status-count">0 aircraft</span>
+    <span id="status-updated">—</span>
+  </div>
+
+  <!-- Reset to home overview -->
+  <button id="reset-view" data-i18n="resetView" data-i18n-title="resetViewTitle" title="Reset view">⟲ Reset View</button>
+
+  <!-- Weather radar toggle -->
+  <button id="weather-toggle" data-i18n-title="weatherToggleTitle" title="Weather radar">🌧</button>
+
+  <!-- Language toggle -->
+  <button id="lang-toggle" data-i18n-title="langToggleTitle" title="Language">EN</button>
+
+    <!-- Alert flash overlay -->
+  <div id="alert-flash"></div>
+
+  <!-- Alert banners (stacked; populated dynamically) -->
+  <div id="alert-stack"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

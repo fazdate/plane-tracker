@@ -1,0 +1,30 @@
+data_source:
+  provider: adsblol        # options: "adsblol" or "opensky"
+
+zones:
+  bounding_box_km: 30
+  focus_radius_km: 10
+
+opensky:
+  poll_interval_seconds: 6
+
+adsblol:
+  poll_interval_seconds: 6
+
+alerts:
+  boring_types:
+    - B737
+    - B738
+    - B739
+    - B38M
+    - B39M
+    - A318
+    - A319
+    - A320
+    - A321
+    - A20N
+    - A21N
+  emergency_squawks:
+    - "7500"
+    - "7600"
+    - "7700"
