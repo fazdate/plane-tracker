@@ -20,6 +20,7 @@ const DICTS = {
     weatherToggleTitle: "Weather radar",
     aircraftCount: (n) => `${n} aircraft`,
     photoOf: (reg) => `Photo of ${reg}`,
+    routeUncertainTitle: "Route may be inaccurate - unverified against a second source",
   },
   hu: {
     labelAirline: "Légitársaság",
@@ -39,6 +40,7 @@ const DICTS = {
     weatherToggleTitle: "Időjárás radar",
     aircraftCount: (n) => `${n} repülőgép`,
     photoOf: (reg) => `Fénykép: ${reg}`,
+    routeUncertainTitle: "Az útvonal pontatlan lehet - nem erősítette meg egy második forrás",
   },
 };
 

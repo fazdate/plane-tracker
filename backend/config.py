@@ -16,6 +16,9 @@ _REQUIRED_KEYS = {
 # committed to version control.
 _REQUIRED_ENV = ["HOME_LATITUDE", "HOME_LONGITUDE"]
 _VALID_PROVIDERS = ("adsblol", "opensky")
+# Default altitude (metres) below which a focused aircraft is assumed to be
+# taking off from or landing at the home airport (used to sanity-check routes).
+_DEFAULT_ROUTE_SANITY_MAX_ALTITUDE_M = 3000
 
 
 class ConfigError(Exception):
@@ -37,6 +40,17 @@ class Config:
         self.bbox_km: float = self.raw["zones"]["bounding_box_km"]
         self.focus_km: float = self.raw["zones"]["focus_radius_km"]
         self.box: BoundingBox = bounding_box(self.home_lat, self.home_lon, self.bbox_km)
+
+        # Optional: IATA code of the home airport, used only to sanity-check
+        # routes (a low-altitude plane nearby that isn't going to/from this
+        # airport is a sign the route data may be wrong). Left unset, this
+        # check is simply skipped.
+        self.home_airport_iata: str | None = (
+            os.environ.get("HOME_AIRPORT_IATA") or ""
+        ).strip().upper() or None
+        self.route_sanity_max_altitude_m: float = (
+            self.raw.get("route_sanity") or {}
+        ).get("max_altitude_m", _DEFAULT_ROUTE_SANITY_MAX_ALTITUDE_M)
 
     def _validate(self) -> None:
         """Check required sections/keys up front so startup fails with a

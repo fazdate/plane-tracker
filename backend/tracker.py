@@ -37,6 +37,8 @@ class AircraftTracker:
         enrichment: EnrichmentService,
         manager: ConnectionManager,
         fallback_source: AircraftDataSource | None = None,
+        home_airport_iata: str | None = None,
+        route_sanity_max_altitude_m: float = 3000,
     ):
         self.data_source = data_source  # currently active source
         self._primary_source = data_source
@@ -49,6 +51,8 @@ class AircraftTracker:
         self.alert_engine = alert_engine
         self.enrichment = enrichment
         self.manager = manager
+        self.home_airport_iata = home_airport_iata
+        self.route_sanity_max_altitude_m = route_sanity_max_altitude_m
 
         self._consecutive_failures = 0
         self._cycles_on_fallback = 0
@@ -103,7 +107,12 @@ class AircraftTracker:
         if focused:
             focused_ac = next((a for a in aircraft if a["icao24"] == focused), None)
             if focused_ac:
-                route = await self.enrichment.get_route(focused_ac.get("callsign"))
+                route = await self.enrichment.get_route(
+                    focused_ac.get("callsign"),
+                    altitude_m=focused_ac.get("baro_altitude"),
+                    home_iata=self.home_airport_iata,
+                    max_altitude_m=self.route_sanity_max_altitude_m,
+                )
                 focused_ac["route"] = route
 
         self.state["aircraft"] = aircraft

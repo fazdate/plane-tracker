@@ -35,6 +35,8 @@ tracker = AircraftTracker(
     ),
     enrichment=EnrichmentService(),
     manager=ConnectionManager(),
+    home_airport_iata=config.home_airport_iata,
+    route_sanity_max_altitude_m=config.route_sanity_max_altitude_m,
 )
 
 

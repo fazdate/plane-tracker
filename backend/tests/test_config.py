@@ -52,6 +52,29 @@ def test_valid_config_loads_derived_fields(tmp_path, monkeypatch):
     assert config.box.lat_min < config.home_lat < config.box.lat_max
 
 
+def test_home_airport_iata_and_route_sanity_defaults(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+    monkeypatch.delenv("HOME_AIRPORT_IATA", raising=False)
+
+    config = Config(write_yaml(tmp_path, VALID_YAML))
+
+    assert config.home_airport_iata is None
+    assert config.route_sanity_max_altitude_m == 3000
+
+
+def test_home_airport_iata_is_normalized_and_route_sanity_is_overridable(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+    monkeypatch.setenv("HOME_AIRPORT_IATA", " bud ")
+    content = VALID_YAML + "\nroute_sanity:\n  max_altitude_m: 1500\n"
+
+    config = Config(write_yaml(tmp_path, content))
+
+    assert config.home_airport_iata == "BUD"
+    assert config.route_sanity_max_altitude_m == 1500
+
+
 def test_missing_top_level_section_raises(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME_LATITUDE", "47.5")
     monkeypatch.setenv("HOME_LONGITUDE", "19.1")

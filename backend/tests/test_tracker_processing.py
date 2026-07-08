@@ -142,6 +142,25 @@ def test_refresh_once_does_not_fetch_route_when_nothing_focused():
     enrichment.get_route.assert_not_awaited()
 
 
+def test_refresh_once_passes_route_sanity_params_to_get_route():
+    ac = make_aircraft("abc", HOME_LAT, HOME_LON)
+    ac["baro_altitude"] = 1200
+    data_source = Mock(fetch_states=AsyncMock(return_value=[ac]))
+    enrichment = Mock(enrich_static=Mock(), get_route=AsyncMock(return_value=None))
+    tracker = make_tracker(
+        data_source=data_source,
+        enrichment=enrichment,
+        home_airport_iata="BUD",
+        route_sanity_max_altitude_m=3000,
+    )
+
+    asyncio.run(tracker._refresh_once())
+
+    enrichment.get_route.assert_awaited_once_with(
+        "TEST123", altitude_m=1200, home_iata="BUD", max_altitude_m=3000,
+    )
+
+
 def test_close_sources_closes_primary_and_fallback():
     primary = Mock(close=AsyncMock())
     fallback = Mock(close=AsyncMock())

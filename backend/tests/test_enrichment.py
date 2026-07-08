@@ -72,6 +72,7 @@ def test_get_route_parses_successful_response():
         "origin_name": "Budapest",
         "destination_iata": "LHR",
         "destination_name": "Heathrow",
+        "source": "adsbdb",
     }
 
 
@@ -111,6 +112,129 @@ def test_get_route_returns_none_on_request_error():
 
     assert route is None
     assert "WZZ123" in svc._route_cache
+
+
+def test_get_route_falls_back_to_hexdb_when_adsbdb_has_no_route():
+    svc = EnrichmentService()
+
+    adsbdb_response = Mock(status_code=404)
+    route_response = Mock(status_code=200, raise_for_status=Mock())
+    route_response.json = Mock(return_value={"flight": "RYR1AB", "route": "EIDW-EGLL"})
+    origin_response = Mock(status_code=200)
+    origin_response.json = Mock(return_value={"airport": "Dublin Airport", "iata": "DUB"})
+    dest_response = Mock(status_code=200)
+    dest_response.json = Mock(return_value={"airport": "Heathrow Airport", "iata": "LHR"})
+
+    async def fake_get(url):
+        if url.startswith("https://api.adsbdb.com"):
+            return adsbdb_response
+        if url == "https://hexdb.io/api/v1/route/icao/RYR1AB":
+            return route_response
+        if url.endswith("/EIDW"):
+            return origin_response
+        if url.endswith("/EGLL"):
+            return dest_response
+        raise AssertionError(f"unexpected url {url}")
+
+    svc._http.get = AsyncMock(side_effect=fake_get)
+
+    route = asyncio.run(svc.get_route("ryr1ab"))
+
+    assert route == {
+        "origin_iata": "DUB",
+        "origin_name": "Dublin Airport",
+        "destination_iata": "LHR",
+        "destination_name": "Heathrow Airport",
+        "source": "hexdb",
+    }
+
+
+def test_get_route_returns_none_when_both_sources_have_no_route():
+    svc = EnrichmentService()
+    response = Mock(status_code=404)
+    svc._http.get = AsyncMock(return_value=response)
+
+    route = asyncio.run(svc.get_route("UNKNOWN1"))
+
+    assert route is None
+    assert "UNKNOWN1" in svc._route_cache
+
+
+def _adsbdb_ok_response(origin_iata, dest_iata):
+    response = Mock(status_code=200, raise_for_status=Mock())
+    response.json = Mock(return_value={
+        "response": {
+            "flightroute": {
+                "origin": {"iata_code": origin_iata},
+                "destination": {"iata_code": dest_iata},
+            }
+        }
+    })
+    return response
+
+
+def test_get_route_ignores_altitude_check_when_not_low_altitude():
+    svc = EnrichmentService()
+    svc._http.get = AsyncMock(return_value=_adsbdb_ok_response("LIN", "LTN"))
+
+    route = asyncio.run(svc.get_route(
+        "WZZ123", altitude_m=10000, home_iata="BUD", max_altitude_m=3000,
+    ))
+
+    assert route["origin_iata"] == "LIN"
+    assert "uncertain" not in route
+    svc._http.get.assert_awaited_once()  # no fallback lookup needed
+
+
+def test_get_route_uses_hexdb_second_opinion_when_low_altitude_route_misses_home():
+    svc = EnrichmentService()
+    adsbdb_response = _adsbdb_ok_response("LIN", "LTN")  # doesn't touch BUD - suspicious
+    hexdb_route_response = Mock(status_code=200, raise_for_status=Mock())
+    hexdb_route_response.json = Mock(return_value={"route": "LIML-LHBP"})
+    origin_response = Mock(status_code=200, json=Mock(return_value={"airport": "Milan Linate", "iata": "LIN"}))
+    dest_response = Mock(status_code=200, json=Mock(return_value={"airport": "Budapest", "iata": "BUD"}))
+
+    async def fake_get(url):
+        if url.startswith("https://api.adsbdb.com"):
+            return adsbdb_response
+        if url == "https://hexdb.io/api/v1/route/icao/WZZ123":
+            return hexdb_route_response
+        if url.endswith("/LIML"):
+            return origin_response
+        if url.endswith("/LHBP"):
+            return dest_response
+        raise AssertionError(f"unexpected url {url}")
+
+    svc._http.get = AsyncMock(side_effect=fake_get)
+
+    route = asyncio.run(svc.get_route(
+        "WZZ123", altitude_m=1500, home_iata="BUD", max_altitude_m=3000,
+    ))
+
+    assert route["destination_iata"] == "BUD"
+    assert route["source"] == "hexdb"
+    assert "uncertain" not in route
+
+
+def test_get_route_flags_uncertain_when_fallback_does_not_resolve_it():
+    svc = EnrichmentService()
+    adsbdb_response = _adsbdb_ok_response("LIN", "LTN")  # doesn't touch BUD - suspicious
+    hexdb_response = Mock(status_code=404)  # fallback has nothing either
+
+    async def fake_get(url):
+        if url.startswith("https://api.adsbdb.com"):
+            return adsbdb_response
+        return hexdb_response
+
+    svc._http.get = AsyncMock(side_effect=fake_get)
+
+    route = asyncio.run(svc.get_route(
+        "WZZ123", altitude_m=1500, home_iata="BUD", max_altitude_m=3000,
+    ))
+
+    assert route["origin_iata"] == "LIN"
+    assert route["destination_iata"] == "LTN"
+    assert route["uncertain"] is True
 
 
 def test_parse_route_returns_none_on_malformed_data():

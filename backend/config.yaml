@@ -5,6 +5,13 @@ zones:
   bounding_box_km: 30
   focus_radius_km: 10
 
+# A focused aircraft below max_altitude_m is assumed to be taking off from or
+# landing at HOME_AIRPORT_IATA (set in .env); if its route doesn't touch that
+# airport, it's flagged as suspicious and double-checked against a second
+# route data source (see services/enrichment.py).
+route_sanity:
+  max_altitude_m: 3000
+
 opensky:
   poll_interval_seconds: 6
 

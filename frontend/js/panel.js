@@ -107,12 +107,15 @@ export function updatePanel(ac) {
 
   // Route
   const route = ac.route;
+  const routeEl = document.getElementById("info-route");
   if (route && (route.origin_iata || route.destination_iata)) {
     const from = formatAirport(route.origin_name, route.origin_country, route.origin_iata);
     const to = formatAirport(route.destination_name, route.destination_country, route.destination_iata);
-    document.getElementById("info-route").textContent = `${from} → ${to}`;
+    routeEl.textContent = route.uncertain ? `${from} → ${to} *` : `${from} → ${to}`;
+    routeEl.title = route.uncertain ? t("routeUncertainTitle") : "";
   } else {
-    document.getElementById("info-route").textContent = "—";
+    routeEl.textContent = "—";
+    routeEl.title = "";
   }
 
   document.getElementById("info-alt").textContent =

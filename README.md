@@ -14,7 +14,12 @@ emergency squawks and uncommon aircraft types, and English/Hungarian i18n.
   fallback/primary source and automatic failover with exponential backoff.
 - Distance-from-home calculation and a "focused" (nearest in-range) aircraft.
 - Enrichment: airline name/logo, aircraft type name, registration, and
-  route (origin/destination) lookup, with caching.
+  route (origin/destination) lookup via [adsbdb.com](https://www.adsbdb.com/),
+  with an automatic fallback to [hexdb.io](https://hexdb.io/) when the route
+  is missing, and caching. If the focused aircraft is low-altitude and its
+  route doesn't touch the configured home airport, the route is
+  double-checked against the fallback source and flagged as uncertain in
+  the UI if neither source can confirm it.
 - Alerts for emergency squawks (7500/7600/7700) and uncommon aircraft types,
   with an in-browser banner, flash, and chime.
 - Smooth dead-reckoning interpolation between server updates, animated
@@ -110,10 +115,12 @@ npm test
 | `zones` | `bounding_box_km`, `focus_radius_km` | Polling area and "focused aircraft" range |
 | `adsblol` / `opensky` | `poll_interval_seconds` | Poll frequency for the active provider |
 | `alerts` | `boring_types`, `emergency_squawks` | Aircraft types to *not* alert on, and squawk codes that *always* alert |
+| `route_sanity` | `max_altitude_m` | Below this altitude, the focused aircraft's route is expected to touch `HOME_AIRPORT_IATA`; if it doesn't, a fallback source is checked and the route may be flagged as uncertain |
 
 Environment variables (`backend/.env`, see `.env.example`):
 
 | Variable | Required | Purpose |
 |---|---|---|
 | `HOME_LATITUDE` / `HOME_LONGITUDE` | Yes | Home coordinates (kept out of `config.yaml` so they're never committed) |
+| `HOME_AIRPORT_IATA` | No | IATA code of the nearest airport, used only to sanity-check low-altitude routes (see `route_sanity` above); the check is skipped if unset |
 | `OPENSKY_CLIENT_ID` / `OPENSKY_CLIENT_SECRET` | Only if using OpenSky (as primary or fallback) | OAuth2 client credentials for the OpenSky API |
