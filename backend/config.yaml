@@ -25,6 +25,7 @@ filters:
   ignored_callsign_prefixes:
     - AIRSIDE
     - FOAM
+    - FIELD
 
 alerts:
   boring_types:

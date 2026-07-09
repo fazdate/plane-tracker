@@ -223,7 +223,11 @@ body.theme-day #status-count { color: #006c85; }
 }
 
 /* Plane marker */
-.plane-icon { transition: transform 0.1s linear; }
+/* Leaflet positions the marker element itself via a translate3d transform that
+   updates every animation frame; transitioning that caused constant compositor
+   work and fought the dead-reckoning. Transition only the inner heading
+   rotation instead, which changes at most once per poll. */
+.plane-icon > div { transition: transform 0.2s linear; }
 .plane-icon svg { display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 /* Fill color is set inline per-marker (js/planeIcon.js): altitude-based gradient
    for normal planes, or a fixed color for focused/interesting/emergency/grounded. */
@@ -263,15 +267,6 @@ body.theme-day #status-count { color: #006c85; }
   pointer-events: none;
 }
 .plane-label::before { display: none; } /* hide default tooltip arrow */
-
-/* Pulsing focus ring */
-.focus-ring {
-  animation: pulse-ring 2s ease-in-out infinite;
-}
-@keyframes pulse-ring {
-  0%, 100% { stroke-opacity: 0.9; stroke-width: 2; }
-  50% { stroke-opacity: 0.4; stroke-width: 5; }
-}
 
 /* ---- Alert flash overlay ---- */
 #alert-flash {

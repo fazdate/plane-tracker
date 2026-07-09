@@ -144,7 +144,21 @@ export function applyData(data) {
     p.lastUpdate = now;
     p.cls = cls;
     p.data = ac;
-    p.marker.setIcon(makePlaneIcon(ac.true_track, cls, ac.baro_altitude));
+
+    // Rebuilding the divIcon (a fresh SVG DOM node) for every plane on every
+    // poll caused a periodic hitch. The heading changes far more often than the
+    // fill color, so only rebuild when the class or color actually changes;
+    // otherwise just re-rotate the existing element in place.
+    const fill = colorForClass(cls) || altitudeColor(ac.baro_altitude);
+    const heading = ac.true_track || 0;
+    const iconKey = `${cls}|${fill}`;
+    if (p.iconKey !== iconKey) {
+      p.marker.setIcon(makePlaneIcon(heading, cls, ac.baro_altitude));
+      p.iconKey = iconKey;
+    } else {
+      const inner = p.marker._icon && p.marker._icon.firstElementChild;
+      if (inner) inner.style.transform = `rotate(${heading}deg)`;
+    }
 
     const label = ac.callsign || ac.icao24;
     if (p.marker.getTooltip() && p.marker.getTooltip().getContent() !== label) {

@@ -5,6 +5,11 @@ export const map = L.map("map", {
   center: [state.home.lat, state.home.lon],
   zoom: OVERVIEW_ZOOM,
   zoomControl: false,
+  // Render vector layers (the per-plane breadcrumb trails, focus circle) on a
+  // single <canvas> instead of one SVG element per segment. With many tracked
+  // aircraft that's hundreds of polylines; canvas batches them into one redraw,
+  // which is far cheaper on the tablet than mutating that many SVG nodes.
+  preferCanvas: true,
 });
 
 let interactionTimeout = null;

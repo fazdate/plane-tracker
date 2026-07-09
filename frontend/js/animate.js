@@ -1,7 +1,7 @@
 // ---- Interpolation loop (dead-reckoning) ----
 import { state } from "./config.js";
 import { planes, addTrailPoint } from "./planes.js";
-import { enterFollowMode, exitFollowMode, showFocusRing, smoothPan } from "./camera.js";
+import { enterFollowMode, exitFollowMode, smoothPan } from "./camera.js";
 
 // How often (ms) to sample the interpolated position into the trail. Much
 // shorter than the server poll interval, so the route line grows smoothly
@@ -51,7 +51,6 @@ export function animate() {
   // Camera follow
   if (state.focusedIcao && focusedLatLng && !state.followSuppressed) {
     enterFollowMode(focusedLatLng);
-    showFocusRing(focusedLatLng);
     // Smoothly keep the plane centered while following
     if (state.cameraMode === "following" && state.followPanEnabled) {
       // panTo with animation off = we do our own gentle easing
