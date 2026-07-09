@@ -2,8 +2,8 @@ data_source:
   provider: adsblol        # options: "adsblol" or "opensky"
 
 zones:
-  bounding_box_km: 30
-  focus_radius_km: 8
+  bounding_box_km: 13
+  focus_radius_km: 7
 
 # A focused aircraft below max_altitude_m is assumed to be taking off from or
 # landing at HOME_AIRPORT_IATA (set in .env); if its route doesn't touch that

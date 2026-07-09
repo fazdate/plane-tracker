@@ -103,7 +103,8 @@ body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
 .info-row .label { color: var(--text-dim); flex-shrink: 0; }
 
 /* Route can be long (full airport names), so it gets its own row layout:
-   label on top, then each airport on its own right-aligned, wrapping line. */
+   label on top, then each airport on its own right-aligned line. Long
+   names are truncated with an ellipsis (full text via title attribute). */
 .info-row-route { flex-direction: column; align-items: flex-start; gap: 4px; }
 .info-row-route #info-route {
   display: flex;
@@ -114,7 +115,12 @@ body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
   font-size: 17px;
   line-height: 1.35;
 }
-.info-row-route .route-line { max-width: 100%; }
+.info-row-route .route-line {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* Status bar */
 #status-bar {
@@ -129,6 +135,9 @@ body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
   border: 1px solid rgba(0, 229, 255, 0.2);
 }
 #status-count { color: var(--accent); font-weight: 700; }
+/* Cyan accent has poor contrast against the light day-theme panel; use a
+   darker shade there so the tracked-count text stays readable. */
+body.theme-day #status-count { color: #006c85; }
 
 /* Connection status dot */
 .conn-dot {

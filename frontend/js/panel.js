@@ -115,11 +115,12 @@ export function updatePanel(ac) {
     const fromLine = document.createElement("span");
     fromLine.className = "route-line";
     fromLine.textContent = from;
+    fromLine.title = from;
     const toLine = document.createElement("span");
     toLine.className = "route-line";
     toLine.textContent = route.uncertain ? `→ ${to} *` : `→ ${to}`;
+    toLine.title = route.uncertain ? `${t("routeUncertainTitle")}: ${to}` : to;
     routeEl.append(fromLine, toLine);
-    routeEl.title = route.uncertain ? t("routeUncertainTitle") : "";
   } else {
     routeEl.textContent = "—";
     routeEl.title = "";

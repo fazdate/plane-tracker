@@ -47,8 +47,11 @@ const homeIcon = L.divIcon({
 });
 const homeMarker = L.marker([state.home.lat, state.home.lon], { icon: homeIcon }).addTo(map);
 
+// Radius starts at 0 (rather than a hardcoded guess) since it sits at the
+// placeholder home coordinates until the server's first payload arrives
+// anyway; setFocusRadiusKm() then sets the real value from config.yaml.
 const focusCircle = L.circle([state.home.lat, state.home.lon], {
-  radius: 8000, color: "#00e5ff", weight: 1.5, opacity: 0.55, fillOpacity: 0.06,
+  radius: 0, color: "#00e5ff", weight: 1.5, opacity: 0.55, fillOpacity: 0.06,
 }).addTo(map);
 
 // Keeps the drawn circle in sync with the server's actual focus radius
