@@ -100,7 +100,21 @@ body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
 
 .info-rows { display: flex; flex-direction: column; gap: 14px; }
 .info-row { display: flex; justify-content: space-between; font-size: 19px; }
-.info-row .label { color: var(--text-dim); }
+.info-row .label { color: var(--text-dim); flex-shrink: 0; }
+
+/* Route can be long (full airport names), so it gets its own row layout:
+   label on top, then each airport on its own right-aligned, wrapping line. */
+.info-row-route { flex-direction: column; align-items: flex-start; gap: 4px; }
+.info-row-route #info-route {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 100%;
+  text-align: right;
+  font-size: 17px;
+  line-height: 1.35;
+}
+.info-row-route .route-line { max-width: 100%; }
 
 /* Status bar */
 #status-bar {
