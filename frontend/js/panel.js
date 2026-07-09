@@ -1,5 +1,5 @@
 // ---- Focused-plane info panel ----
-import { t } from "./i18n.js";
+import { t, tBadgeLevel } from "./i18n.js";
 import { flagEmoji, registrationCountryIso } from "./flags.js";
 
 const panel = document.getElementById("info-panel");
@@ -142,10 +142,7 @@ export function updatePanel(ac) {
     ac.distance_km != null ? `${ac.distance_km} km` : "—";
 
   const badge = document.getElementById("info-badge");
-  if (ac.alert) {
-    badge.textContent = ac.alert.level;
-    badge.className = `badge ${ac.alert.level}`;
-  } else {
-    badge.textContent = ""; badge.className = "badge";
-  }
+  const badgeLevel = ac.alert ? ac.alert.level : "common";
+  badge.textContent = tBadgeLevel(badgeLevel);
+  badge.className = `badge ${badgeLevel}`;
 }

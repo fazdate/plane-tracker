@@ -28,7 +28,7 @@ describe("colorForClass", () => {
   it("returns a fixed color for known special-state classes", () => {
     expect(colorForClass("emergency")).toBe("var(--red)");
     expect(colorForClass("focused")).toBe("#ffffff");
-    expect(colorForClass("interesting")).toBe("var(--gold)");
+    expect(colorForClass("rare")).toBe("var(--gold)");
     expect(colorForClass("grounded")).toBe("var(--text-dim)");
   });
 
@@ -49,9 +49,9 @@ describe("classFor", () => {
     expect(classFor(ac, "abc")).toBe("focused");
   });
 
-  it("marks interesting (uncommon-type) aircraft below focused priority", () => {
-    const ac = { alert: { level: "interesting" }, icao24: "abc" };
-    expect(classFor(ac, "other")).toBe("interesting");
+  it("marks rare (uncommon-type) aircraft below focused priority", () => {
+    const ac = { alert: { level: "rare" }, icao24: "abc" };
+    expect(classFor(ac, "other")).toBe("rare");
   });
 
   it("marks grounded aircraft when nothing else applies", () => {

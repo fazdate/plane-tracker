@@ -1,6 +1,6 @@
 class AlertEngine:
-    def __init__(self, boring_types: list[str], emergency_squawks: list[str]):
-        self._boring = {t.upper() for t in boring_types}
+    def __init__(self, common_types: list[str], emergency_squawks: list[str]):
+        self._common = {t.upper() for t in common_types}
         self._emergency = set(emergency_squawks)
 
     def evaluate(self, aircraft: dict) -> dict | None:
@@ -16,10 +16,10 @@ class AlertEngine:
         if not ac_type:
             return None  # unknown type -> don't alert (avoid noise)
 
-        if ac_type not in self._boring:
+        if ac_type not in self._common:
             return {
-                "level": "interesting",
-                "reason": f"Uncommon type: {ac_type}",
+                "level": "rare",
+                "reason": f"Rare type: {ac_type}",
                 "flash": "gold",
             }
         return None

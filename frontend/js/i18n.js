@@ -21,6 +21,11 @@ const DICTS = {
     aircraftCount: (n) => `${n} aircraft`,
     photoOf: (reg) => `Photo of ${reg}`,
     routeUncertainTitle: "Route may be inaccurate - unverified against a second source",
+    badgeLevel: {
+      emergency: "EMERGENCY",
+      rare: "RARE",
+      common: "COMMON",
+    },
   },
   hu: {
     labelAirline: "Légitársaság",
@@ -41,6 +46,11 @@ const DICTS = {
     aircraftCount: (n) => `${n} repülőgép`,
     photoOf: (reg) => `Fénykép: ${reg}`,
     routeUncertainTitle: "Az útvonal pontatlan lehet - nem erősítette meg egy második forrás",
+    badgeLevel: {
+      emergency: "VÉSZHELYZET",
+      rare: "RITKA",
+      common: "GYAKORI",
+    },
   },
 };
 
@@ -103,6 +113,15 @@ export function t(key, ...args) {
   let entry = dict[key];
   if (entry === undefined) entry = DICTS.en[key];
   return typeof entry === "function" ? entry(...args) : entry;
+}
+
+// Translates an alert badge level (e.g. "emergency", "rare", "common") to the
+// current language, falling back to the raw level if it's unrecognized.
+export function tBadgeLevel(level) {
+  const dict = DICTS[currentLang] || DICTS.en;
+  return (dict.badgeLevel && dict.badgeLevel[level]) ||
+    (DICTS.en.badgeLevel && DICTS.en.badgeLevel[level]) ||
+    level;
 }
 
 // Applies translations to any static markup tagged with data-i18n /

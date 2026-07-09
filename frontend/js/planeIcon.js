@@ -40,7 +40,7 @@ export function colorForClass(cssClass) {
     // water/sky on the satellite basemap; the cyan glow ring (see camera.js
     // and .plane-icon.focused in style.css) still ties it back to --accent.
     case "focused": return "#ffffff";
-    case "interesting": return "var(--gold)";
+    case "rare": return "var(--gold)";
     case "grounded": return "var(--text-dim)";
     default: return null;
   }
@@ -49,7 +49,7 @@ export function colorForClass(cssClass) {
 export function classFor(ac, focusedIcao) {
   if (ac.alert && ac.alert.level === "emergency") return "emergency";
   if (ac.icao24 === focusedIcao) return "focused";
-  if (ac.alert && ac.alert.level === "interesting") return "interesting";
+  if (ac.alert && ac.alert.level === "rare") return "rare";
   if (ac.on_ground) return "grounded";
   return "";
 }

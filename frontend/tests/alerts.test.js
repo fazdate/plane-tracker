@@ -22,7 +22,7 @@ function makeAircraft(overrides = {}) {
     callsign: "TEST123",
     distance_km: 2,
     on_ground: false,
-    alert: { level: "interesting", reason: "Uncommon type" },
+    alert: { level: "rare", reason: "Uncommon type" },
     ...overrides,
   };
 }

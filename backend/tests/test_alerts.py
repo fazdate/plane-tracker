@@ -2,9 +2,9 @@
 from services.alerts import AlertEngine
 
 
-def make_engine(boring_types=None, emergency_squawks=None) -> AlertEngine:
+def make_engine(common_types=None, emergency_squawks=None) -> AlertEngine:
     return AlertEngine(
-        boring_types=boring_types if boring_types is not None else ["B738", "A320"],
+        common_types=common_types if common_types is not None else ["B738", "A320"],
         emergency_squawks=emergency_squawks if emergency_squawks is not None else ["7500", "7600", "7700"],
     )
 
@@ -19,22 +19,22 @@ def test_emergency_squawk_takes_priority_over_type():
     }
 
 
-def test_boring_type_produces_no_alert():
+def test_common_type_produces_no_alert():
     engine = make_engine()
     assert engine.evaluate({"squawk": "1200", "aircraft_type": "B738"}) is None
 
 
-def test_boring_type_match_is_case_insensitive():
+def test_common_type_match_is_case_insensitive():
     engine = make_engine()
     assert engine.evaluate({"squawk": "1200", "aircraft_type": "b738"}) is None
 
 
-def test_uncommon_type_produces_interesting_alert():
+def test_uncommon_type_produces_rare_alert():
     engine = make_engine()
     alert = engine.evaluate({"squawk": "1200", "aircraft_type": "C172"})
     assert alert == {
-        "level": "interesting",
-        "reason": "Uncommon type: C172",
+        "level": "rare",
+        "reason": "Rare type: C172",
         "flash": "gold",
     }
 

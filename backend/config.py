@@ -10,7 +10,7 @@ from services.geo import BoundingBox, bounding_box
 _REQUIRED_KEYS = {
     "data_source": ["provider"],
     "zones": ["bounding_box_km", "focus_radius_km"],
-    "alerts": ["boring_types", "emergency_squawks"],
+    "alerts": ["common_types", "emergency_squawks"],
 }
 # Home coordinates live in the environment (not config.yaml) so they're never
 # committed to version control.

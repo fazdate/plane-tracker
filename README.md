@@ -114,7 +114,7 @@ npm test
 | `data_source` | `provider` | `adsblol` or `opensky` |
 | `zones` | `bounding_box_km`, `focus_radius_km` | Polling area and "focused aircraft" range |
 | `adsblol` / `opensky` | `poll_interval_seconds` | Poll frequency for the active provider |
-| `alerts` | `boring_types`, `emergency_squawks` | Aircraft types to *not* alert on, and squawk codes that *always* alert |
+| `alerts` | `common_types`, `emergency_squawks` | Aircraft types to *not* alert on, and squawk codes that *always* alert |
 | `route_sanity` | `max_altitude_m` | Below this altitude, the focused aircraft's route is expected to touch `HOME_AIRPORT_IATA`; if it doesn't, a fallback source is checked and the route may be flagged as uncertain |
 | `filters` | `ignored_callsign_prefixes` | Callsign prefixes (case-insensitive) to filter out entirely, e.g. ground vehicles/GSE (`AIRSIDE`, `FOAM`, ...); extend the list as needed |
 

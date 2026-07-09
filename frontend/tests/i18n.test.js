@@ -31,6 +31,28 @@ describe("t()", () => {
   });
 });
 
+describe("tBadgeLevel()", () => {
+  it("translates a known alert level in the default (Hungarian) language", async () => {
+    const { tBadgeLevel } = await freshI18n();
+    expect(tBadgeLevel("rare")).toBe("RITKA");
+    expect(tBadgeLevel("common")).toBe("GYAKORI");
+    expect(tBadgeLevel("emergency")).toBe("VÉSZHELYZET");
+  });
+
+  it("translates a known alert level in English", async () => {
+    const { tBadgeLevel, setLang } = await freshI18n();
+    setLang("en");
+    expect(tBadgeLevel("rare")).toBe("RARE");
+    expect(tBadgeLevel("common")).toBe("COMMON");
+    expect(tBadgeLevel("emergency")).toBe("EMERGENCY");
+  });
+
+  it("falls back to the raw level for an unrecognized level", async () => {
+    const { tBadgeLevel } = await freshI18n();
+    expect(tBadgeLevel("focused")).toBe("focused");
+  });
+});
+
 describe("language persistence and cycling", () => {
   it("defaults to Hungarian when nothing is stored", async () => {
     const { getLang } = await freshI18n();

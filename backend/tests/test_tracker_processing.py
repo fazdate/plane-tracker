@@ -72,7 +72,7 @@ def test_process_aircraft_ignored_prefix_match_is_case_insensitive():
 
 
 def test_process_aircraft_computes_distance_and_calls_collaborators():
-    alert_engine = Mock(evaluate=Mock(return_value={"level": "interesting"}))
+    alert_engine = Mock(evaluate=Mock(return_value={"level": "rare"}))
     enrichment = Mock(enrich_static=Mock())
     tracker = make_tracker(alert_engine=alert_engine, enrichment=enrichment)
 
@@ -82,7 +82,7 @@ def test_process_aircraft_computes_distance_and_calls_collaborators():
     assert len(enriched) == 1
     ac = enriched[0]
     assert ac["distance_km"] == 0.0
-    assert ac["alert"] == {"level": "interesting"}
+    assert ac["alert"] == {"level": "rare"}
     enrichment.enrich_static.assert_called_once_with(ac)
     alert_engine.evaluate.assert_called_once_with(ac)
 

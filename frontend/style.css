@@ -82,7 +82,8 @@ body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
   font-size: 14px; font-weight: 600; padding: 5px 12px;
   border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;
 }
-.badge.interesting { background: var(--gold); color: #241a00; box-shadow: 0 0 10px rgba(255,214,10,0.5); }
+.badge.rare { background: var(--gold); color: #241a00; box-shadow: 0 0 10px rgba(255,214,10,0.5); }
+.badge.common { background: var(--green); color: #052b16; box-shadow: 0 0 10px rgba(45,216,129,0.5); }
 .badge.emergency { background: var(--red); color: #fff; box-shadow: 0 0 10px rgba(255,55,95,0.6); }
 
 #info-photo-wrap { margin-bottom: 18px; }
@@ -224,7 +225,7 @@ body.theme-day #status-count { color: #006c85; }
 .plane-icon > div { transition: transform 0.2s linear; }
 .plane-icon svg { display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 /* Fill color is set inline per-marker (js/planeIcon.js): altitude-based gradient
-   for normal planes, or a fixed color for focused/interesting/emergency/grounded. */
+   for normal planes, or a fixed color for focused/rare/emergency/grounded. */
 
 /* Focused plane: white fill (set in planeIcon.js) plus a cyan glow so it
    still reads as "the followed one" without the low-contrast cyan fill. */

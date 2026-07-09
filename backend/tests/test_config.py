@@ -15,7 +15,7 @@ adsblol:
   poll_interval_seconds: 6
 
 alerts:
-  boring_types:
+  common_types:
     - B738
   emergency_squawks:
     - "7700"

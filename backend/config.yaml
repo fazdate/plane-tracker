@@ -29,7 +29,7 @@ filters:
     - TRUCK
 
 alerts:
-  boring_types:
+  common_types:
     - B737
     - B738
     - B739

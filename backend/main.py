@@ -30,7 +30,7 @@ tracker = AircraftTracker(
     focus_km=config.focus_km,
     box=config.box,
     alert_engine=AlertEngine(
-        boring_types=config.raw["alerts"]["boring_types"],
+        common_types=config.raw["alerts"]["common_types"],
         emergency_squawks=config.raw["alerts"]["emergency_squawks"],
     ),
     enrichment=EnrichmentService(),
