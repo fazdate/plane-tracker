@@ -109,10 +109,13 @@ export function updatePanel(ac) {
     ? (regFlag ? `${regFlag} ${ac.registration}` : ac.registration)
     : "—";
 
-  // Route
+  // Route - kept on a single line (like every other row) so it always
+  // lines up with its label; long names are ellipsis-truncated in CSS with
+  // the full text available via the title tooltip.
   const route = ac.route;
   const routeEl = document.getElementById("info-route");
   routeEl.textContent = "";
+  routeEl.title = "";
   if (route && (route.origin_iata || route.destination_iata)) {
     const from = formatAirport(route.origin_name, route.origin_country, route.origin_iata);
     const to = formatAirport(route.destination_name, route.destination_country, route.destination_iata);
@@ -120,18 +123,15 @@ export function updatePanel(ac) {
     const toFlag = flagEmoji(route.destination_country_iso);
     const fromText = fromFlag ? `${fromFlag} ${from}` : from;
     const toText = toFlag ? `${toFlag} ${to}` : to;
-    const fromLine = document.createElement("span");
-    fromLine.className = "route-line";
-    fromLine.textContent = fromText;
-    fromLine.title = from;
-    const toLine = document.createElement("span");
-    toLine.className = "route-line";
-    toLine.textContent = route.uncertain ? `\u2192 ${toText} *` : `\u2192 ${toText}`;
-    toLine.title = route.uncertain ? `${t("routeUncertainTitle")}: ${to}` : to;
-    routeEl.append(fromLine, toLine);
+    const routeLabel = `${from} \u2192 ${to}`;
+    routeEl.textContent = route.uncertain
+      ? `${fromText} \u2192 ${toText} *`
+      : `${fromText} \u2192 ${toText}`;
+    routeEl.title = route.uncertain
+      ? `${t("routeUncertainTitle")}: ${routeLabel}`
+      : routeLabel;
   } else {
     routeEl.textContent = "—";
-    routeEl.title = "";
   }
 
   document.getElementById("info-alt").textContent =

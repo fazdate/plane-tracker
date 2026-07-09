@@ -34,6 +34,25 @@ ROUTE_CACHE_TTL = 6 * 3600   # cache routes for 6 hours
 NEGATIVE_TTL = 30 * 60       # remember "no route" for 30 min
 MAX_STATIC_CACHE_ENTRIES = 5000  # cap memory use for long-running processes
 
+# hexdb.io's airport endpoint only gives a full airport name (e.g. "Heathrow
+# Airport"), unlike adsbdb's municipality (e.g. "London") - trimming these
+# common suffixes keeps the hexdb fallback name closer in length to what
+# adsbdb normally provides, so the frontend route display doesn't overflow.
+_AIRPORT_NAME_SUFFIXES = (
+    " International Airport",
+    " Intl Airport",
+    " Airport",
+)
+
+
+def _shorten_airport_name(name: str | None) -> str | None:
+    if not name:
+        return name
+    for suffix in _AIRPORT_NAME_SUFFIXES:
+        if name.endswith(suffix):
+            return name[: -len(suffix)]
+    return name
+
 
 class EnrichmentService:
     def __init__(self):
@@ -181,10 +200,10 @@ class EnrichmentService:
             dest = await self._fetch_hexdb_airport(dest_icao)
             return {
                 "origin_iata": origin.get("iata") if origin else None,
-                "origin_name": origin.get("airport") if origin else None,
+                "origin_name": _shorten_airport_name(origin.get("airport")) if origin else None,
                 "origin_country_iso": origin.get("country_code") if origin else None,
                 "destination_iata": dest.get("iata") if dest else None,
-                "destination_name": dest.get("airport") if dest else None,
+                "destination_name": _shorten_airport_name(dest.get("airport")) if dest else None,
                 "destination_country_iso": dest.get("country_code") if dest else None,
                 "source": "hexdb",
             }, False
