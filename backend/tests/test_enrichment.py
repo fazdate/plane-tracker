@@ -70,8 +70,10 @@ def test_get_route_parses_successful_response():
     assert route == {
         "origin_iata": "BUD",
         "origin_name": "Budapest",
+        "origin_country_iso": None,
         "destination_iata": "LHR",
         "destination_name": "Heathrow",
+        "destination_country_iso": None,
         "source": "adsbdb",
     }
 
@@ -143,8 +145,10 @@ def test_get_route_falls_back_to_hexdb_when_adsbdb_has_no_route():
     assert route == {
         "origin_iata": "DUB",
         "origin_name": "Dublin Airport",
+        "origin_country_iso": None,
         "destination_iata": "LHR",
         "destination_name": "Heathrow Airport",
+        "destination_country_iso": None,
         "source": "hexdb",
     }
 

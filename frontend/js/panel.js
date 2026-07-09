@@ -1,5 +1,6 @@
 // ---- Focused-plane info panel ----
 import { t } from "./i18n.js";
+import { flagEmoji, registrationCountryIso } from "./flags.js";
 
 const panel = document.getElementById("info-panel");
 
@@ -103,7 +104,10 @@ export function updatePanel(ac) {
   document.getElementById("info-airline").textContent = ac.airline || "—";
   document.getElementById("info-actype").textContent =
     ac.aircraft_type_name || ac.aircraft_type || "—";
-  document.getElementById("info-reg").textContent = ac.registration || "—";
+  const regFlag = flagEmoji(registrationCountryIso(ac.registration));
+  document.getElementById("info-reg").textContent = ac.registration
+    ? (regFlag ? `${regFlag} ${ac.registration}` : ac.registration)
+    : "—";
 
   // Route
   const route = ac.route;
@@ -112,13 +116,17 @@ export function updatePanel(ac) {
   if (route && (route.origin_iata || route.destination_iata)) {
     const from = formatAirport(route.origin_name, route.origin_country, route.origin_iata);
     const to = formatAirport(route.destination_name, route.destination_country, route.destination_iata);
+    const fromFlag = flagEmoji(route.origin_country_iso);
+    const toFlag = flagEmoji(route.destination_country_iso);
+    const fromText = fromFlag ? `${fromFlag} ${from}` : from;
+    const toText = toFlag ? `${toFlag} ${to}` : to;
     const fromLine = document.createElement("span");
     fromLine.className = "route-line";
-    fromLine.textContent = from;
+    fromLine.textContent = fromText;
     fromLine.title = from;
     const toLine = document.createElement("span");
     toLine.className = "route-line";
-    toLine.textContent = route.uncertain ? `→ ${to} *` : `→ ${to}`;
+    toLine.textContent = route.uncertain ? `\u2192 ${toText} *` : `\u2192 ${toText}`;
     toLine.title = route.uncertain ? `${t("routeUncertainTitle")}: ${to}` : to;
     routeEl.append(fromLine, toLine);
   } else {

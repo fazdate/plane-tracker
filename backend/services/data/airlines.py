@@ -83,6 +83,7 @@ AIRLINES: dict[str, tuple[str, str | None]] = {
     "GFA": ("Gulf Air", "GF"),
     "GIA": ("Garuda Indonesia", "GA"),
     "GLO": ("GOL Linhas Aereas", "G3"),
+    "GPX": ("GP Aviation", "IV"),
     "GTI": ("Atlas Air", "5Y"),
     "GWI": ("Eurowings", "EW"),
     "HOP": ("HOP!", "A5"),

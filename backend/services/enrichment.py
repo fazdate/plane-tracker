@@ -182,8 +182,10 @@ class EnrichmentService:
             return {
                 "origin_iata": origin.get("iata") if origin else None,
                 "origin_name": origin.get("airport") if origin else None,
+                "origin_country_iso": origin.get("country_code") if origin else None,
                 "destination_iata": dest.get("iata") if dest else None,
                 "destination_name": dest.get("airport") if dest else None,
+                "destination_country_iso": dest.get("country_code") if dest else None,
                 "source": "hexdb",
             }, False
         except Exception as e:
@@ -213,8 +215,10 @@ class EnrichmentService:
             return {
                 "origin_iata": origin.get("iata_code"),
                 "origin_name": origin.get("municipality") or origin.get("name"),
+                "origin_country_iso": origin.get("country_iso_name"),
                 "destination_iata": dest.get("iata_code"),
                 "destination_name": dest.get("municipality") or dest.get("name"),
+                "destination_country_iso": dest.get("country_iso_name"),
             }
         except (KeyError, TypeError):
             return None

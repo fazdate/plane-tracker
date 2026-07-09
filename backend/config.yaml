@@ -26,6 +26,7 @@ filters:
     - AIRSIDE
     - FOAM
     - FIELD
+    - TRUCK
 
 alerts:
   boring_types:
