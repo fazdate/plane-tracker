@@ -52,6 +52,13 @@ class Config:
             self.raw.get("route_sanity") or {}
         ).get("max_altitude_m", _DEFAULT_ROUTE_SANITY_MAX_ALTITUDE_M)
 
+        # Callsign prefixes to filter out entirely (e.g. ground vehicles).
+        # Optional; defaults to an empty list. Comparisons are case-insensitive.
+        self.ignored_callsign_prefixes: list[str] = [
+            str(p).strip().upper()
+            for p in (self.raw.get("filters") or {}).get("ignored_callsign_prefixes", [])
+        ]
+
     def _validate(self) -> None:
         """Check required sections/keys up front so startup fails with a
         clear message instead of a raw KeyError deep in some other module."""

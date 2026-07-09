@@ -3,7 +3,7 @@ data_source:
 
 zones:
   bounding_box_km: 30
-  focus_radius_km: 10
+  focus_radius_km: 8
 
 # A focused aircraft below max_altitude_m is assumed to be taking off from or
 # landing at HOME_AIRPORT_IATA (set in .env); if its route doesn't touch that
@@ -17,6 +17,14 @@ opensky:
 
 adsblol:
   poll_interval_seconds: 6
+
+# Aircraft whose callsign starts with any of these prefixes are filtered out
+# entirely (e.g. ground vehicles/GSE that show up alongside real aircraft).
+# Matching is case-insensitive; add more prefixes as needed.
+filters:
+  ignored_callsign_prefixes:
+    - AIRSIDE
+    - FOAM
 
 alerts:
   boring_types:

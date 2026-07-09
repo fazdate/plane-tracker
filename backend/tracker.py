@@ -39,6 +39,7 @@ class AircraftTracker:
         fallback_source: AircraftDataSource | None = None,
         home_airport_iata: str | None = None,
         route_sanity_max_altitude_m: float = 3000,
+        ignored_callsign_prefixes: list[str] | None = None,
     ):
         self.data_source = data_source  # currently active source
         self._primary_source = data_source
@@ -53,6 +54,10 @@ class AircraftTracker:
         self.manager = manager
         self.home_airport_iata = home_airport_iata
         self.route_sanity_max_altitude_m = route_sanity_max_altitude_m
+        # Uppercased so matching in _is_ignored_callsign() is case-insensitive.
+        self.ignored_callsign_prefixes = tuple(
+            p.upper() for p in (ignored_callsign_prefixes or [])
+        )
 
         self._consecutive_failures = 0
         self._cycles_on_fallback = 0
@@ -81,6 +86,8 @@ class AircraftTracker:
                 continue
             if not ac.get("callsign"):
                 continue  # no callsign -> ground vehicle, not an aircraft
+            if self._is_ignored_callsign(ac["callsign"]):
+                continue
             dist = haversine_km(self.home_lat, self.home_lon, ac["latitude"], ac["longitude"])
             ac["distance_km"] = round(dist, 2)
             self.enrichment.enrich_static(ac)
@@ -98,6 +105,12 @@ class AircraftTracker:
             focused["focused"] = True
 
         return enriched, focused_icao
+
+    def _is_ignored_callsign(self, callsign: str) -> bool:
+        """True if callsign starts with a configured ignored prefix (e.g. a
+        ground vehicle like AIRSIDE1), so it can be filtered out."""
+        callsign = callsign.strip().upper()
+        return callsign.startswith(self.ignored_callsign_prefixes)
 
     async def _refresh_once(self):
         """Fetch, enrich, and broadcast a single polling cycle."""

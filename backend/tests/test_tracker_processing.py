@@ -52,6 +52,25 @@ def test_process_aircraft_skips_entries_without_callsign():
     assert focused is None
 
 
+def test_process_aircraft_skips_ignored_callsign_prefixes():
+    tracker = make_tracker(ignored_callsign_prefixes=["AIRSIDE", "GND"])
+    ground_vehicle = make_aircraft("abc", HOME_LAT, HOME_LON, callsign="AIRSIDE1")
+    real_plane = make_aircraft("def", HOME_LAT, HOME_LON, callsign="UAL123")
+
+    enriched, focused = tracker.process_aircraft([ground_vehicle, real_plane])
+
+    assert [a["icao24"] for a in enriched] == ["def"]
+
+
+def test_process_aircraft_ignored_prefix_match_is_case_insensitive():
+    tracker = make_tracker(ignored_callsign_prefixes=["AIRSIDE"])
+    raw = [make_aircraft("abc", HOME_LAT, HOME_LON, callsign="airside2")]
+
+    enriched, focused = tracker.process_aircraft(raw)
+
+    assert enriched == []
+
+
 def test_process_aircraft_computes_distance_and_calls_collaborators():
     alert_engine = Mock(evaluate=Mock(return_value={"level": "interesting"}))
     enrichment = Mock(enrich_static=Mock())

@@ -75,6 +75,25 @@ def test_home_airport_iata_is_normalized_and_route_sanity_is_overridable(tmp_pat
     assert config.route_sanity_max_altitude_m == 1500
 
 
+def test_ignored_callsign_prefixes_defaults_to_empty(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+
+    config = Config(write_yaml(tmp_path, VALID_YAML))
+
+    assert config.ignored_callsign_prefixes == []
+
+
+def test_ignored_callsign_prefixes_are_loaded_and_normalized(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+    content = VALID_YAML + "\nfilters:\n  ignored_callsign_prefixes:\n    - airside\n    - ' Gnd '\n"
+
+    config = Config(write_yaml(tmp_path, content))
+
+    assert config.ignored_callsign_prefixes == ["AIRSIDE", "GND"]
+
+
 def test_missing_top_level_section_raises(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME_LATITUDE", "47.5")
     monkeypatch.setenv("HOME_LONGITUDE", "19.1")

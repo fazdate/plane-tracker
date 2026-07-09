@@ -48,7 +48,7 @@ const homeIcon = L.divIcon({
 const homeMarker = L.marker([state.home.lat, state.home.lon], { icon: homeIcon }).addTo(map);
 
 const focusCircle = L.circle([state.home.lat, state.home.lon], {
-  radius: 10000, color: "#00e5ff", weight: 1.5, opacity: 0.55, fillOpacity: 0.06,
+  radius: 8000, color: "#00e5ff", weight: 1.5, opacity: 0.55, fillOpacity: 0.06,
 }).addTo(map);
 
 // Keeps the drawn circle in sync with the server's actual focus radius
