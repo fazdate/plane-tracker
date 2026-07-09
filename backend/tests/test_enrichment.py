@@ -237,6 +237,39 @@ def test_get_route_flags_uncertain_when_fallback_does_not_resolve_it():
     assert route["uncertain"] is True
 
 
+def test_get_route_revalidates_cached_route_when_aircraft_descends():
+    """A route cached while the aircraft was high up/far away must still be
+    sanity-checked once it later shows up low and near home, instead of being
+    served blindly from the cache with no `uncertain` flag."""
+    svc = EnrichmentService()
+    adsbdb_response = _adsbdb_ok_response("LIN", "LTN")  # never touches BUD
+    svc._http.get = AsyncMock(return_value=adsbdb_response)
+
+    # First lookup: cruising, far from home - no sanity check applies, gets cached.
+    first = asyncio.run(svc.get_route(
+        "WZZ123", altitude_m=10000, home_iata="BUD", max_altitude_m=3000,
+    ))
+    assert "uncertain" not in first
+    svc._http.get.assert_awaited_once()
+
+    # Second lookup: same callsign, now low and near home - the cached route
+    # should be re-checked (hexdb) rather than returned as-is.
+    hexdb_response = Mock(status_code=404)  # fallback has nothing either
+
+    async def fake_get(url):
+        if url.startswith("https://api.adsbdb.com"):
+            raise AssertionError("should use cached adsbdb result, not refetch")
+        return hexdb_response
+
+    svc._http.get = AsyncMock(side_effect=fake_get)
+
+    second = asyncio.run(svc.get_route(
+        "WZZ123", altitude_m=1500, home_iata="BUD", max_altitude_m=3000,
+    ))
+
+    assert second["uncertain"] is True
+
+
 def test_parse_route_returns_none_on_malformed_data():
     assert EnrichmentService._parse_route({}) is None
     assert EnrichmentService._parse_route({"response": {}}) is None

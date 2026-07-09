@@ -90,15 +90,17 @@ class EnrichmentService:
         route looks wrong: hexdb.io is checked as a second opinion, and if
         that doesn't clear things up either, the returned route is marked
         `"uncertain": True` so callers (the frontend) can flag it.
+
+        A route can be cached for up to `ROUTE_CACHE_TTL` from a lookup made
+        while the aircraft was still high up / far away, i.e. before this
+        sanity check applied. If the aircraft has since descended below
+        `max_altitude_m` near `home_iata`, a cached route that hasn't been
+        checked against that yet is re-validated (once) instead of being
+        returned blindly.
         """
         if not callsign:
             return None
         callsign = callsign.strip().upper()
-
-        cached = self._route_cache.get(callsign)
-        now = time.time()
-        if cached and cached[1] > now:
-            return cached[0]
 
         low_altitude = (
             altitude_m is not None
@@ -106,11 +108,25 @@ class EnrichmentService:
             and altitude_m < max_altitude_m
         )
 
-        route, errored = await self._fetch_adsbdb_route(callsign)
-        suspicious = bool(
-            route and low_altitude and home_iata
-            and not self._touches_airport(route, home_iata)
-        )
+        now = time.time()
+        cached = self._route_cache.get(callsign)
+        if cached and cached[1] > now:
+            route, errored = cached[0], False
+            suspicious = bool(
+                route and "uncertain" not in route and low_altitude and home_iata
+                and not self._touches_airport(route, home_iata)
+            )
+            if not suspicious:
+                return route
+            # falls through to re-check this cached route against hexdb below,
+            # since it hasn't yet been validated against the aircraft's current
+            # low-altitude position
+        else:
+            route, errored = await self._fetch_adsbdb_route(callsign)
+            suspicious = bool(
+                route and low_altitude and home_iata
+                and not self._touches_airport(route, home_iata)
+            )
 
         if route is None or suspicious:
             fallback_route, fallback_errored = await self._fetch_hexdb_route(callsign)

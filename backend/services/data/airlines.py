@@ -18,6 +18,8 @@ AIRLINES: dict[str, tuple[str, str | None]] = {
     "EJU": ("easyJet Europe", "EC"),
     "EZY": ("easyJet", "U2"),
     "EZS": ("easyJet Switzerland", "EZS"),
+    "AAE": ("Hungary Airlines", "2G"),
+    "HUA": ("Hungary Airlines", "2G"),
     # DACH region
     "DLH": ("Lufthansa", "LH"),
     "GEC": ("Lufthansa Cargo", "GEC"),
@@ -70,6 +72,7 @@ AIRLINES: dict[str, tuple[str, str | None]] = {
     "MGH": ("Air Anka", "6K"),
     "NIA": ("Sky Vision Airlines", "SE"),
     "KNE": ("Flynas", "XY"),
+    "VSV": ("SCAT Airlines", "DV"),
     # Africa
     "ETH": ("Ethiopian Airlines", "ET"),
     "SAA": ("South African Airways", "SA"),
