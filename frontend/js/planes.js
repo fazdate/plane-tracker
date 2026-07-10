@@ -1,7 +1,7 @@
 // ---- Plane state store: applies server snapshots to markers ----
 import { map, setFocusRadiusKm, setHomeLocation } from "./map.js";
 import { state } from "./config.js";
-import { makePlaneIcon, classFor, colorForClass, altitudeColor } from "./planeIcon.js";
+import { makePlaneIcon, classFor, fillFor } from "./planeIcon.js";
 import { updatePanel } from "./panel.js";
 import { processAlerts } from "./alerts.js";
 import { applyTheme } from "./theme.js";
@@ -32,7 +32,7 @@ export function addTrailPoint(p, lat, lon) {
     if (oldest) p.trailLayer.removeLayer(oldest);
   }
 
-  const color = colorForClass(p.cls) || altitudeColor(p.data && p.data.baro_altitude);
+  const color = fillFor(p.cls, p.data && p.data.baro_altitude);
 
   if (prev) {
     const seg = L.polyline([prev, [lat, lon]], {
@@ -153,7 +153,7 @@ export function applyData(data) {
     // poll caused a periodic hitch. The heading changes far more often than the
     // fill color, so only rebuild when the class or color actually changes;
     // otherwise just re-rotate the existing element in place.
-    const fill = colorForClass(cls) || altitudeColor(ac.baro_altitude);
+    const fill = fillFor(cls, ac.baro_altitude);
     const heading = ac.true_track || 0;
     const iconKey = `${cls}|${fill}|${!!ac.is_helicopter}`;
     if (p.iconKey !== iconKey) {

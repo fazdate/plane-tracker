@@ -1,13 +1,11 @@
 """OpenSky Network API client using OAuth2 client credentials."""
-import time
 import logging
-from typing import Optional
+import time
 
 import httpx
 
-from services.geo import BoundingBox
-
 from services.base_client import AircraftDataSource
+from services.geo import BoundingBox
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +29,7 @@ class OpenSkyClient(AircraftDataSource):
     def __init__(self, client_id: str, client_secret: str):
         self._client_id = client_id
         self._client_secret = client_secret
-        self._token: Optional[str] = None
+        self._token: str | None = None
         self._token_expiry: float = 0.0
         self._http = httpx.AsyncClient(timeout=15.0)
 

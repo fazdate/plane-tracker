@@ -25,10 +25,11 @@ function updateLogo(ac) {
   logo.src = src;
 }
 
-// Build a "City, Country" label for an airport, falling back to its IATA
-// code (or "???") when city/country data isn't available.
-function formatAirport(name, country, iata) {
-  if (name && country) return `${name}, ${country}`;
+// Build a display label for an airport: its "City" / name, falling back to
+// its IATA code (or "???") when no name is available. The country is conveyed
+// by the flag emoji rendered alongside this label (see updatePanel), so it's
+// deliberately not repeated in the text.
+function formatAirport(name, iata) {
   if (name) return name;
   return iata || "???";
 }
@@ -120,8 +121,8 @@ export function updatePanel(ac) {
   routeEl.textContent = "";
   routeEl.title = "";
   if (route && (route.origin_iata || route.destination_iata)) {
-    const from = formatAirport(route.origin_name, route.origin_country, route.origin_iata);
-    const to = formatAirport(route.destination_name, route.destination_country, route.destination_iata);
+    const from = formatAirport(route.origin_name, route.origin_iata);
+    const to = formatAirport(route.destination_name, route.destination_iata);
     const fromFlag = flagEmoji(route.origin_country_iso);
     const toFlag = flagEmoji(route.destination_country_iso);
     const fromText = fromFlag ? `${fromFlag} ${from}` : from;

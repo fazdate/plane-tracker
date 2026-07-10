@@ -35,7 +35,7 @@ export function altitudeColor(altitudeM) {
 }
 
 export function makePlaneIcon(heading, cssClass, altitudeM, isHelicopter) {
-  const fill = colorForClass(cssClass) || altitudeColor(altitudeM);
+  const fill = fillFor(cssClass, altitudeM);
   const svg = isHelicopter ? helicopterSvg(fill) : planeSvg(fill);
   const className = isHelicopter ? `plane-icon helicopter ${cssClass}` : `plane-icon ${cssClass}`;
   return L.divIcon({
@@ -44,6 +44,13 @@ export function makePlaneIcon(heading, cssClass, altitudeM, isHelicopter) {
     iconSize: [38, 38],
     iconAnchor: [19, 19],
   });
+}
+
+// Resolves the fill color for a plane: a special-state color (emergency/
+// focused/rare/grounded) if any, otherwise the altitude gradient. Shared so
+// the marker icon and the trail/cache-key logic in planes.js stay in sync.
+export function fillFor(cssClass, altitudeM) {
+  return colorForClass(cssClass) || altitudeColor(altitudeM);
 }
 
 // Special states override altitude color-coding.

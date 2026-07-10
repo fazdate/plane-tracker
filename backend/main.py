@@ -18,32 +18,42 @@ logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("plane-tracker")
 
-config = Config()
-data_source, fallback_source, poll_interval = create_data_source(config)
 
-tracker = AircraftTracker(
-    data_source=data_source,
-    fallback_source=fallback_source,
-    poll_interval=poll_interval,
-    home_lat=config.home_lat,
-    home_lon=config.home_lon,
-    focus_km=config.focus_km,
-    box=config.box,
-    alert_engine=AlertEngine(
-        common_types=config.raw["alerts"]["common_types"],
-        emergency_squawks=config.raw["alerts"]["emergency_squawks"],
-    ),
-    enrichment=EnrichmentService(special_aircraft=config.special_aircraft),
-    manager=ConnectionManager(),
-    home_airport_iata=config.home_airport_iata,
-    route_sanity_max_altitude_m=config.route_sanity_max_altitude_m,
-    ignored_callsign_prefixes=config.ignored_callsign_prefixes,
-    daily_stats_db_path=config.daily_stats_db_path,
-)
+def build_tracker() -> AircraftTracker:
+    """Construct the tracker and its collaborators from configuration.
+
+    Kept as a function (rather than run at import time) so importing this
+    module has no side effects -- config isn't read and no HTTP clients are
+    opened until the app actually starts up.
+    """
+    config = Config()
+    data_source, fallback_source, poll_interval = create_data_source(config)
+    return AircraftTracker(
+        data_source=data_source,
+        fallback_source=fallback_source,
+        poll_interval=poll_interval,
+        home_lat=config.home_lat,
+        home_lon=config.home_lon,
+        focus_km=config.focus_km,
+        box=config.box,
+        alert_engine=AlertEngine(
+            common_types=config.raw["alerts"]["common_types"],
+            emergency_squawks=config.raw["alerts"]["emergency_squawks"],
+        ),
+        enrichment=EnrichmentService(special_aircraft=config.special_aircraft),
+        manager=ConnectionManager(),
+        home_airport_iata=config.home_airport_iata,
+        route_sanity_max_altitude_m=config.route_sanity_max_altitude_m,
+        ignored_callsign_prefixes=config.ignored_callsign_prefixes,
+        daily_stats_db_path=config.daily_stats_db_path,
+    )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    tracker = build_tracker()
+    app.state.tracker = tracker
+    register_routes(app, tracker, tracker.manager)
     task = asyncio.create_task(tracker.poll_loop())
     yield
     task.cancel()
@@ -58,5 +68,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-register_routes(app, tracker, tracker.manager)

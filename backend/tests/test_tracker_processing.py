@@ -95,9 +95,8 @@ def test_process_aircraft_focuses_nearest_airborne_within_range():
 
     enriched, focused = tracker.process_aircraft([far, near])
 
-    assert focused == "near"
-    focused_ac = next(a for a in enriched if a["icao24"] == "near")
-    assert focused_ac["focused"] is True
+    assert focused["icao24"] == "near"
+    assert focused["focused"] is True
 
 
 def test_process_aircraft_ignores_ground_aircraft_for_focus():

@@ -82,7 +82,7 @@ class AircraftTracker:
             "daily_count": self.daily_stats.count,
         }
 
-    def process_aircraft(self, raw: list[dict]) -> tuple[list[dict], str | None]:
+    def process_aircraft(self, raw: list[dict]) -> tuple[list[dict], dict | None]:
         """Enrich all aircraft with distance/alerts; select focused separately."""
         enriched = []
         for ac in raw:
@@ -102,13 +102,12 @@ class AircraftTracker:
             a for a in enriched
             if not a.get("on_ground") and a["distance_km"] <= self.focus_km
         ]
-        focused_icao = None
+        focused = None
         if candidates:
             focused = min(candidates, key=lambda a: a["distance_km"])
-            focused_icao = focused["icao24"]
             focused["focused"] = True
 
-        return enriched, focused_icao
+        return enriched, focused
 
     def _is_ignored_callsign(self, callsign: str) -> bool:
         """True if callsign starts with a configured ignored prefix (e.g. a
@@ -123,22 +122,20 @@ class AircraftTracker:
         self.daily_stats.record(a["icao24"] for a in aircraft)
 
         if focused:
-            focused_ac = next((a for a in aircraft if a["icao24"] == focused), None)
-            if focused_ac:
-                route = await self.enrichment.get_route(
-                    focused_ac.get("callsign"),
-                    altitude_m=focused_ac.get("baro_altitude"),
-                    home_iata=self.home_airport_iata,
-                    max_altitude_m=self.route_sanity_max_altitude_m,
-                )
-                focused_ac["route"] = route
+            focused["route"] = await self.enrichment.get_route(
+                focused.get("callsign"),
+                altitude_m=focused.get("baro_altitude"),
+                home_iata=self.home_airport_iata,
+                max_altitude_m=self.route_sanity_max_altitude_m,
+            )
 
+        focused_icao = focused["icao24"] if focused else None
         self.state["aircraft"] = aircraft
-        self.state["focused_icao"] = focused
+        self.state["focused_icao"] = focused_icao
         self.state["updated_at"] = time.monotonic()
 
         await self.manager.broadcast(self.build_payload())
-        self._log_summary(aircraft, focused)
+        self._log_summary(aircraft, focused_icao)
 
     @staticmethod
     def _log_summary(aircraft: list[dict], focused: str | None):
