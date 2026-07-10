@@ -117,22 +117,27 @@ body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
   margin-left: 12px;
 }
 
-/* Status bar */
-#status-bar {
+/* Status bar + daily aircraft counter: stacked bottom-right, sharing the
+   same compact pill styling. */
+#bottom-right-stack {
   position: absolute;
   bottom: 20px; right: 20px;
   z-index: 1000;
+  display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+}
+#status-bar, #daily-panel {
   display: flex; align-items: center; gap: 20px;
   background: var(--panel);
   backdrop-filter: blur(14px);
   padding: 14px 22px; border-radius: 14px;
   color: var(--text-dim); font-size: 17px;
   border: 1px solid rgba(0, 229, 255, 0.2);
+  white-space: nowrap;
 }
-#status-count { color: var(--accent); font-weight: 700; }
+#status-count, #daily-count { color: var(--accent); font-weight: 700; }
 /* Cyan accent has poor contrast against the light day-theme panel; use a
    darker shade there so the tracked-count text stays readable. */
-body.theme-day #status-count { color: #006c85; }
+body.theme-day #status-count, body.theme-day #daily-count { color: #006c85; }
 
 /* Connection status dot */
 .conn-dot {

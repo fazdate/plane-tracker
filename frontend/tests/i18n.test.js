@@ -23,6 +23,13 @@ describe("t()", () => {
     expect(t("aircraftCount", 3)).toBe("3 repülőgép");
   });
 
+  it("translates the daily aircraft count in both languages", async () => {
+    const { t, setLang } = await freshI18n();
+    expect(t("dailyCount", 12)).toBe("12 repülőgép nyomon követve ma");
+    setLang("en");
+    expect(t("dailyCount", 12)).toBe("12 airplanes tracked today");
+  });
+
   it("falls back to English when a key is missing from the active dictionary", async () => {
     const { t, setLang } = await freshI18n();
     setLang("en");

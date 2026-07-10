@@ -21,6 +21,7 @@ def make_tracker(**overrides) -> AircraftTracker:
         alert_engine=Mock(evaluate=Mock(return_value=None)),
         enrichment=Mock(enrich_static=Mock(), get_route=AsyncMock(return_value=None)),
         manager=Mock(broadcast=AsyncMock()),
+        daily_stats_db_path=":memory:",
     )
     defaults.update(overrides)
     return AircraftTracker(**defaults)
@@ -131,6 +132,7 @@ def test_build_payload_reflects_current_state():
     assert payload["count"] == 1
     assert payload["aircraft"] == tracker.state["aircraft"]
     assert isinstance(payload["is_daytime"], bool)
+    assert payload["daily_count"] == 0  # nothing recorded via _refresh_once yet
 
 
 def test_refresh_once_updates_state_and_broadcasts():
@@ -147,6 +149,18 @@ def test_refresh_once_updates_state_and_broadcasts():
     assert tracker.state["aircraft"][0]["route"] == {"origin_iata": "BUD"}
     assert tracker.state["updated_at"] is not None
     manager.broadcast.assert_awaited_once()
+
+
+def test_refresh_once_records_seen_aircraft_in_daily_stats():
+    ac = make_aircraft("abc", HOME_LAT, HOME_LON)
+    data_source = Mock(fetch_states=AsyncMock(return_value=[ac]))
+    enrichment = Mock(enrich_static=Mock(), get_route=AsyncMock(return_value=None))
+    tracker = make_tracker(data_source=data_source, enrichment=enrichment)
+
+    asyncio.run(tracker._refresh_once())
+
+    assert tracker.daily_stats.count == 1
+    assert tracker.build_payload()["daily_count"] == 1
 
 
 def test_refresh_once_does_not_fetch_route_when_nothing_focused():

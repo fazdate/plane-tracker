@@ -8,6 +8,7 @@ import httpx
 from connection_manager import ConnectionManager
 from services.alerts import AlertEngine
 from services.base_client import AircraftDataSource
+from services.daily_stats import DEFAULT_DB_PATH, DailyStats
 from services.enrichment import EnrichmentService
 from services.geo import BoundingBox, haversine_km, is_daytime
 
@@ -40,6 +41,7 @@ class AircraftTracker:
         home_airport_iata: str | None = None,
         route_sanity_max_altitude_m: float = 3000,
         ignored_callsign_prefixes: list[str] | None = None,
+        daily_stats_db_path: str = DEFAULT_DB_PATH,
     ):
         self.data_source = data_source  # currently active source
         self._primary_source = data_source
@@ -61,6 +63,7 @@ class AircraftTracker:
 
         self._consecutive_failures = 0
         self._cycles_on_fallback = 0
+        self.daily_stats = DailyStats(daily_stats_db_path)
 
         self.state = {
             "aircraft": [],
@@ -76,6 +79,7 @@ class AircraftTracker:
             "count": len(self.state["aircraft"]),
             "aircraft": self.state["aircraft"],
             "is_daytime": is_daytime(self.home_lat, self.home_lon),
+            "daily_count": self.daily_stats.count,
         }
 
     def process_aircraft(self, raw: list[dict]) -> tuple[list[dict], str | None]:
@@ -116,6 +120,7 @@ class AircraftTracker:
         """Fetch, enrich, and broadcast a single polling cycle."""
         raw = await self.data_source.fetch_states(self.box)
         aircraft, focused = self.process_aircraft(raw)
+        self.daily_stats.record(a["icao24"] for a in aircraft)
 
         if focused:
             focused_ac = next((a for a in aircraft if a["icao24"] == focused), None)
@@ -198,7 +203,9 @@ class AircraftTracker:
         return min(backoff, MAX_BACKOFF_SECONDS)
 
     async def close_sources(self):
-        """Close the HTTP clients for both the primary and fallback sources."""
+        """Close the HTTP clients for both the primary and fallback sources,
+        and the daily stats database connection."""
         await self._primary_source.close()
         if self._fallback_source is not None:
             await self._fallback_source.close()
+        self.daily_stats.close()

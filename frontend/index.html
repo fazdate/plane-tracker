@@ -34,11 +34,17 @@
     </div>
   </div>
 
-  <!-- Status bar -->
-  <div id="status-bar">
-    <span id="conn-dot" class="conn-dot" data-i18n-title="connecting" title="Connecting…"></span>
-    <span id="status-count">0 aircraft</span>
-    <span id="status-updated">—</span>
+  <!-- Status bar + daily aircraft counter, stacked bottom-right -->
+  <div id="bottom-right-stack">
+    <div id="status-bar">
+      <span id="conn-dot" class="conn-dot" data-i18n-title="connecting" title="Connecting…"></span>
+      <span id="status-count">0 aircraft</span>
+      <span id="status-updated">—</span>
+    </div>
+    <!-- Distinct aircraft tracked since local midnight -->
+    <div id="daily-panel" data-i18n-title="dailyCountTitle" title="Aircraft tracked today">
+      <span id="daily-count">0 airplanes tracked today</span>
+    </div>
   </div>
 
   <!-- Reset to home overview -->

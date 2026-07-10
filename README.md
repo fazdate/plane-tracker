@@ -27,6 +27,9 @@ emergency squawks and uncommon aircraft types, and English/Hungarian i18n.
 - Day/night theme based on the real sunrise/sunset time for the home location.
 - Live weather radar overlay (RainViewer) and aircraft photo lookup
   (Planespotters).
+- Daily aircraft counter: number of distinct aircraft tracked since local
+  midnight, shown in a compact panel; persisted to a small SQLite database
+  so the count survives a backend restart partway through the day.
 - English / Hungarian language toggle.
 
 ## Architecture
@@ -117,6 +120,7 @@ npm test
 | `alerts` | `common_types`, `emergency_squawks` | Aircraft types to *not* alert on, and squawk codes that *always* alert |
 | `route_sanity` | `max_altitude_m` | Below this altitude, the focused aircraft's route is expected to touch `HOME_AIRPORT_IATA`; if it doesn't, a fallback source is checked and the route may be flagged as uncertain |
 | `filters` | `ignored_callsign_prefixes` | Callsign prefixes (case-insensitive) to filter out entirely, e.g. ground vehicles/GSE (`AIRSIDE`, `FOAM`, ...); extend the list as needed |
+| `daily_stats` | `db_path` | Path to the SQLite file backing the daily aircraft counter; defaults to `daily_stats.db` alongside the backend code |
 
 Environment variables (`backend/.env`, see `.env.example`):
 

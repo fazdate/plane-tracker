@@ -11,6 +11,9 @@ venv/
 .env.*
 !.env.example
 
+# --- Runtime data ---
+backend/daily_stats.db
+
 # --- Node / frontend tooling ---
 node_modules/
 

@@ -85,9 +85,13 @@ function animateCount(target) {
 // Re-renders text that depends on the active language, using the most
 // recently seen data. Called after the user switches languages.
 let lastData = null;
+let lastDailyCount = null;
 export function refreshI18nTexts() {
   if (displayedCount != null) {
     document.getElementById("status-count").textContent = t("aircraftCount", displayedCount);
+  }
+  if (lastDailyCount != null) {
+    document.getElementById("daily-count").textContent = t("dailyCount", lastDailyCount);
   }
   if (lastData) {
     const focused = lastData.aircraft.find((a) => a.icao24 === state.focusedIcao);
@@ -186,4 +190,9 @@ export function applyData(data) {
   document.getElementById("status-updated").textContent =
     new Date().toLocaleTimeString();
   animateCount(data.count);
+
+  if (data.daily_count != null) {
+    lastDailyCount = data.daily_count;
+    document.getElementById("daily-count").textContent = t("dailyCount", lastDailyCount);
+  }
 }

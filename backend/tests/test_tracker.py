@@ -32,6 +32,7 @@ def make_tracker(fallback_source=None) -> AircraftTracker:
         enrichment=Mock(name="enrichment"),
         manager=Mock(name="manager"),
         fallback_source=fallback_source,
+        daily_stats_db_path=":memory:",
     )
 
 

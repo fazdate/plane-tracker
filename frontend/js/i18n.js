@@ -19,6 +19,8 @@ const DICTS = {
     langToggleTitle: "Language",
     weatherToggleTitle: "Weather radar",
     aircraftCount: (n) => `${n} aircraft`,
+    dailyCount: (n) => `${n} airplanes tracked today`,
+    dailyCountTitle: "Distinct aircraft tracked since midnight (local time)",
     photoOf: (reg) => `Photo of ${reg}`,
     routeUncertainTitle: "Route may be inaccurate - unverified against a second source",
     badgeLevel: {
@@ -44,6 +46,8 @@ const DICTS = {
     langToggleTitle: "Nyelv",
     weatherToggleTitle: "Időjárás radar",
     aircraftCount: (n) => `${n} repülőgép`,
+    dailyCount: (n) => `${n} repülőgép nyomon követve ma`,
+    dailyCountTitle: "Éjfél (helyi idő) óta nyomon követett különböző repülőgépek száma",
     photoOf: (reg) => `Fénykép: ${reg}`,
     routeUncertainTitle: "Az útvonal pontatlan lehet - nem erősítette meg egy második forrás",
     badgeLevel: {

@@ -4,6 +4,7 @@ import os
 import yaml
 from dotenv import load_dotenv
 
+from services.daily_stats import DEFAULT_DB_PATH as DEFAULT_DAILY_STATS_DB_PATH
 from services.geo import BoundingBox, bounding_box
 
 # Top-level sections and keys that must be present in config.yaml.
@@ -58,6 +59,13 @@ class Config:
             str(p).strip().upper()
             for p in (self.raw.get("filters") or {}).get("ignored_callsign_prefixes", [])
         ]
+
+        # SQLite file backing the "aircraft tracked today" counter, so it
+        # survives a restart partway through the day. Optional; defaults to
+        # a file alongside the backend code.
+        self.daily_stats_db_path: str = (
+            self.raw.get("daily_stats") or {}
+        ).get("db_path", DEFAULT_DAILY_STATS_DB_PATH)
 
     def _validate(self) -> None:
         """Check required sections/keys up front so startup fails with a

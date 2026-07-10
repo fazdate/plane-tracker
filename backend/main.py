@@ -38,6 +38,7 @@ tracker = AircraftTracker(
     home_airport_iata=config.home_airport_iata,
     route_sanity_max_altitude_m=config.route_sanity_max_altitude_m,
     ignored_callsign_prefixes=config.ignored_callsign_prefixes,
+    daily_stats_db_path=config.daily_stats_db_path,
 )
 
 

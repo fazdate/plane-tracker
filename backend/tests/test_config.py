@@ -94,6 +94,25 @@ def test_ignored_callsign_prefixes_are_loaded_and_normalized(tmp_path, monkeypat
     assert config.ignored_callsign_prefixes == ["AIRSIDE", "GND"]
 
 
+def test_daily_stats_db_path_defaults(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+
+    config = Config(write_yaml(tmp_path, VALID_YAML))
+
+    assert config.daily_stats_db_path == "daily_stats.db"
+
+
+def test_daily_stats_db_path_is_overridable(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+    content = VALID_YAML + "\ndaily_stats:\n  db_path: /var/lib/plane-tracker/stats.db\n"
+
+    config = Config(write_yaml(tmp_path, content))
+
+    assert config.daily_stats_db_path == "/var/lib/plane-tracker/stats.db"
+
+
 def test_missing_top_level_section_raises(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME_LATITUDE", "47.5")
     monkeypatch.setenv("HOME_LONGITUDE", "19.1")
