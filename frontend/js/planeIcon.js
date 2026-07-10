@@ -9,6 +9,18 @@ function planeSvg(fill) {
   </svg>`;
 }
 
+// Top-down helicopter silhouette: main rotor bar, fuselage/cabin, tail boom
+// with a small tail rotor - distinct enough from the fixed-wing icon at a
+// glance while still rotating with heading like the plane icon does.
+function helicopterSvg(fill) {
+  return `<svg width="38" height="38" viewBox="0 0 24 24">
+    <line x1="3" y1="5" x2="21" y2="5" stroke="rgba(0,0,0,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+    <path fill="${fill}" stroke="rgba(0,0,0,0.85)" stroke-width="1.4" stroke-linejoin="round" paint-order="stroke fill" d="M9.5 7.5h5c1.1 0 1.8 1 1.8 2.2v4.3c0 1-.7 1.8-1.6 1.8h-.4v3.6l1.4.6v1H8.3v-1l1.4-.6v-3.6h-.4c-.9 0-1.6-.8-1.6-1.8V9.7c0-1.2.7-2.2 1.8-2.2z"/>
+    <line x1="15.2" y1="12" x2="20" y2="12" stroke="rgba(0,0,0,0.85)" stroke-width="1.3" stroke-linecap="round"/>
+    <line x1="19" y1="10.3" x2="19" y2="13.7" stroke="rgba(0,0,0,0.85)" stroke-width="1.1" stroke-linecap="round"/>
+  </svg>`;
+}
+
 // Interpolate hue from warm red/orange (low altitude) straight to hot
 // magenta/violet (high altitude), deliberately skipping the green/cyan/blue
 // range so markers never blend into the water, foliage or haze of the
@@ -22,11 +34,13 @@ export function altitudeColor(altitudeM) {
   return `hsl(${hue.toFixed(0)}, 100%, 60%)`;
 }
 
-export function makePlaneIcon(heading, cssClass, altitudeM) {
+export function makePlaneIcon(heading, cssClass, altitudeM, isHelicopter) {
   const fill = colorForClass(cssClass) || altitudeColor(altitudeM);
+  const svg = isHelicopter ? helicopterSvg(fill) : planeSvg(fill);
+  const className = isHelicopter ? `plane-icon helicopter ${cssClass}` : `plane-icon ${cssClass}`;
   return L.divIcon({
-    className: `plane-icon ${cssClass}`,
-    html: `<div style="transform: rotate(${heading || 0}deg);">${planeSvg(fill)}</div>`,
+    className,
+    html: `<div style="transform: rotate(${heading || 0}deg);">${svg}</div>`,
     iconSize: [38, 38],
     iconAnchor: [19, 19],
   });

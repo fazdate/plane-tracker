@@ -44,6 +44,57 @@ def test_enrich_static_recomputes_when_callsign_changes():
     assert ac2["airline"] == "Ryanair"
 
 
+def test_enrich_static_adds_helicopter_flag_from_type_code():
+    svc = EnrichmentService()
+    ac = {"icao24": "abc123", "callsign": "WZZ123", "aircraft_type": "H60"}
+    svc.enrich_static(ac)
+    assert ac["is_helicopter"] is True
+
+
+def test_enrich_static_no_helicopter_flag_for_fixed_wing():
+    svc = EnrichmentService()
+    ac = {"icao24": "abc123", "callsign": "WZZ123", "aircraft_type": "B738"}
+    svc.enrich_static(ac)
+    assert ac["is_helicopter"] is False
+
+
+def test_enrich_static_uses_special_aircraft_match_when_no_known_airline():
+    svc = EnrichmentService(special_aircraft=[
+        {"prefix": "MEDIC", "name": "OMSZ Helicopter", "is_helicopter": True,
+         "logo_url": "https://example.com/omsz.png"},
+    ])
+    ac = {"icao24": "abc123", "callsign": "MEDIC01", "aircraft_type": None}
+    svc.enrich_static(ac)
+
+    assert ac["airline"] == "OMSZ Helicopter"
+    assert ac["airline_iata"] is None
+    assert ac["airline_logo_url"] == "https://example.com/omsz.png"
+    assert ac["is_helicopter"] is True
+
+
+def test_enrich_static_known_airline_takes_priority_over_special_aircraft():
+    svc = EnrichmentService(special_aircraft=[
+        {"prefix": "R", "name": "Hungarian Police"},
+    ])
+    ac = {"icao24": "abc123", "callsign": "RYR456", "aircraft_type": "B738"}
+    svc.enrich_static(ac)
+
+    assert ac["airline"] == "Ryanair"
+    assert ac["airline_iata"] == "FR"
+
+
+def test_enrich_static_special_aircraft_without_logo_url_has_none():
+    svc = EnrichmentService(special_aircraft=[
+        {"prefix": "HUF", "name": "Hungarian Air Force"},
+    ])
+    ac = {"icao24": "abc123", "callsign": "HUF123", "aircraft_type": None}
+    svc.enrich_static(ac)
+
+    assert ac["airline"] == "Hungarian Air Force"
+    assert ac["airline_logo_url"] is None
+    assert ac["is_helicopter"] is False
+
+
 def test_get_route_returns_none_without_callsign():
     svc = EnrichmentService()
     assert asyncio.run(svc.get_route(None)) is None

@@ -121,7 +121,7 @@ export function applyData(data) {
     let p = planes.get(ac.icao24);
     if (!p) {
       const marker = L.marker([ac.latitude, ac.longitude], {
-        icon: makePlaneIcon(ac.true_track, cls, ac.baro_altitude),
+        icon: makePlaneIcon(ac.true_track, cls, ac.baro_altitude, ac.is_helicopter),
       }).addTo(map);
       marker.bindTooltip(ac.callsign || ac.icao24, {
         permanent: true,
@@ -155,9 +155,9 @@ export function applyData(data) {
     // otherwise just re-rotate the existing element in place.
     const fill = colorForClass(cls) || altitudeColor(ac.baro_altitude);
     const heading = ac.true_track || 0;
-    const iconKey = `${cls}|${fill}`;
+    const iconKey = `${cls}|${fill}|${!!ac.is_helicopter}`;
     if (p.iconKey !== iconKey) {
-      p.marker.setIcon(makePlaneIcon(heading, cls, ac.baro_altitude));
+      p.marker.setIcon(makePlaneIcon(heading, cls, ac.baro_altitude, ac.is_helicopter));
       p.iconKey = iconKey;
     } else {
       const inner = p.marker._icon && p.marker._icon.firstElementChild;

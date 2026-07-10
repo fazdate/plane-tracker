@@ -10,16 +10,19 @@ const LOGO_URL = (iata) => `https://images.kiwi.com/airlines/64/${iata}.png`;
 
 function updateLogo(ac) {
   const logo = document.getElementById("info-logo");
-  const iata = ac.airline_iata;
-  if (!iata) {
+  // A manually configured logo (see backend's special_aircraft config, for
+  // aircraft with no IATA code to look one up by) takes priority over the
+  // IATA-based Kiwi.com lookup.
+  const src = ac.airline_logo_url || (ac.airline_iata ? LOGO_URL(ac.airline_iata) : null);
+  if (!src) {
     logo.classList.add("hidden");
     logo.removeAttribute("src");
     return;
   }
-  logo.alt = ac.airline || iata;
+  logo.alt = ac.airline || ac.airline_iata || "";
   logo.onerror = () => logo.classList.add("hidden");
   logo.onload = () => logo.classList.remove("hidden");
-  logo.src = LOGO_URL(iata);
+  logo.src = src;
 }
 
 // Build a "City, Country" label for an airport, falling back to its IATA

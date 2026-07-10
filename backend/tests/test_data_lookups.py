@@ -1,5 +1,5 @@
 """Unit tests for static aircraft-type and airline lookup helpers."""
-from services.data.aircraft_types import aircraft_type_name
+from services.data.aircraft_types import aircraft_type_name, is_helicopter_type
 from services.data.airlines import airline_from_callsign, airline_iata_from_callsign
 
 
@@ -40,3 +40,16 @@ def test_airline_from_callsign_too_short_returns_none():
 def test_airline_from_callsign_none_returns_none():
     assert airline_from_callsign(None) is None
     assert airline_iata_from_callsign(None) is None
+
+
+def test_is_helicopter_type_known_code():
+    assert is_helicopter_type("H60") is True
+    assert is_helicopter_type("h60") is True
+
+
+def test_is_helicopter_type_unknown_code_returns_false():
+    assert is_helicopter_type("B738") is False
+
+
+def test_is_helicopter_type_none_returns_false():
+    assert is_helicopter_type(None) is False

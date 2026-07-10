@@ -60,6 +60,12 @@ class Config:
             for p in (self.raw.get("filters") or {}).get("ignored_callsign_prefixes", [])
         ]
 
+        # Non-airline aircraft (military/government/police/medical/etc.)
+        # matched by callsign prefix instead of the 3-letter ICAO airline
+        # codes in services/data/airlines.py. Optional; defaults to an empty
+        # list. See services/data/special_aircraft.py for matching logic.
+        self.special_aircraft: list[dict] = list(self.raw.get("special_aircraft") or [])
+
         # SQLite file backing the "aircraft tracked today" counter, so it
         # survives a restart partway through the day. Optional; defaults to
         # a file alongside the backend code.
@@ -94,6 +100,10 @@ class Config:
         for name in _REQUIRED_ENV:
             if name not in os.environ:
                 errors.append(f"missing environment variable '{name}'")
+
+        for i, entry in enumerate(self.raw.get("special_aircraft") or []):
+            if not isinstance(entry, dict) or not entry.get("prefix") or not entry.get("name"):
+                errors.append(f"special_aircraft[{i}] must have a 'prefix' and a 'name'")
 
         if errors:
             raise ConfigError("Invalid configuration:\n  - " + "\n  - ".join(errors))

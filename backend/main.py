@@ -33,7 +33,7 @@ tracker = AircraftTracker(
         common_types=config.raw["alerts"]["common_types"],
         emergency_squawks=config.raw["alerts"]["emergency_squawks"],
     ),
-    enrichment=EnrichmentService(),
+    enrichment=EnrichmentService(special_aircraft=config.special_aircraft),
     manager=ConnectionManager(),
     home_airport_iata=config.home_airport_iata,
     route_sanity_max_altitude_m=config.route_sanity_max_altitude_m,

@@ -27,6 +27,40 @@ filters:
     - FOAM
     - FIELD
     - TRUCK
+    - YELLOW
+
+# Non-airline aircraft (military, government, police, medical, etc.) whose
+# callsigns don't follow the standard 3-letter ICAO airline codes (those
+# live in backend/services/data/airlines.py instead). Matched by callsign
+# prefix, case-insensitive, longest prefix wins; only checked as a fallback
+# for callsigns that don't already match a known airline. Add/edit entries
+# freely - no code changes needed.
+#   prefix:         callsign prefix to match, e.g. "MEDIC" matches "MEDIC01"
+#   name:           shown as the "airline" field in the UI
+#   logo_url:       optional direct link to a logo/picture for the info
+#                   panel; omit to show no logo (there's no IATA code to
+#                   look one up by for these)
+#   is_helicopter:  optional, defaults to false; forces the helicopter map
+#                   icon on even if the reported aircraft type isn't
+#                   recognized as a helicopter (see aircraft_types.py)
+special_aircraft:
+  - prefix: MEDIC
+    name: OMSZ Helicopter
+    is_helicopter: true
+    logo_url: https://hu.wikipedia.org/wiki/F%C3%A1jl:Insignia_Hungary_OMSZ_v1.svg
+  - prefix: NARVL
+    name: Hungarian Air Force
+    logo_url: https://hu.wikipedia.org/wiki/F%C3%A1jl:Roundel_of_Hungary.svg
+  - prefix: R
+    name: Hungarian Police
+    logo_url: https://commons.wikimedia.org/wiki/File:Insignia_Hungary_Police.svg
+    is_helicopter: true
+  - prefix: HUF
+    name: Hungarian Air Force
+    logo_url: https://hu.wikipedia.org/wiki/F%C3%A1jl:Roundel_of_Hungary.svg
+  - prefix: RCH
+    name: U.S. Air Force
+    logo_url: https://commons.wikimedia.org/wiki/File:US_Air_Force_Logo_Solid_Colour.svg
 
 alerts:
   common_types:

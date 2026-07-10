@@ -72,8 +72,23 @@ AIRCRAFT_TYPES: dict[str, str] = {
     "EC25": "Airbus H225M Caracal",
 }
 
+# ICAO type designators that are helicopters (the "Helicopters" entries
+# above), used to pick a helicopter icon on the map instead of the default
+# fixed-wing plane icon. See also special_aircraft.py, which lets a
+# callsign-based match force this on when the aircraft's reported type is
+# missing or unrecognized (e.g. some military/EMS helicopters).
+HELICOPTER_TYPES: frozenset[str] = frozenset({
+    "EC35", "EC45", "EC30", "EC55", "AS50", "A139", "A109",
+    "B06", "B407", "B429", "S76", "S92", "H500", "R44", "R22",
+    "MI8", "MI17", "H47", "H60", "EC25",
+})
+
 
 def aircraft_type_name(type_code: str | None) -> str | None:
     if not type_code:
         return None
     return AIRCRAFT_TYPES.get(type_code.upper(), type_code)  # fallback: raw code
+
+
+def is_helicopter_type(type_code: str | None) -> bool:
+    return bool(type_code) and type_code.upper() in HELICOPTER_TYPES

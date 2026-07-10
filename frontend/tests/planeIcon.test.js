@@ -1,5 +1,11 @@
-import { describe, it, expect } from "vitest";
-import { altitudeColor, colorForClass, classFor } from "../js/planeIcon.js";
+import { describe, it, expect, beforeAll } from "vitest";
+import { altitudeColor, colorForClass, classFor, makePlaneIcon } from "../js/planeIcon.js";
+
+// makePlaneIcon() calls Leaflet's L.divIcon(); stub it so these tests can
+// run without pulling in the real Leaflet library.
+beforeAll(() => {
+  globalThis.L = { divIcon: (opts) => opts };
+});
 
 describe("altitudeColor", () => {
   it("returns the default fill color when altitude is unknown", () => {
@@ -62,5 +68,24 @@ describe("classFor", () => {
   it("returns an empty string for a plain airborne aircraft", () => {
     const ac = { icao24: "abc", on_ground: false };
     expect(classFor(ac, "other")).toBe("");
+  });
+});
+
+describe("makePlaneIcon", () => {
+  it("uses the plane icon and class by default", () => {
+    const icon = makePlaneIcon(90, "", 5000);
+    expect(icon.className).toBe("plane-icon ");
+    expect(icon.html).not.toContain("<line");
+  });
+
+  it("uses a helicopter icon and adds a helicopter class when requested", () => {
+    const icon = makePlaneIcon(90, "", 5000, true);
+    expect(icon.className).toBe("plane-icon helicopter ");
+    expect(icon.html).toContain("<line");
+  });
+
+  it("rotates the icon to match heading, defaulting to 0 when missing", () => {
+    const icon = makePlaneIcon(null, "", 5000);
+    expect(icon.html).toContain("rotate(0deg)");
   });
 });

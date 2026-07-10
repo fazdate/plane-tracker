@@ -113,6 +113,50 @@ def test_daily_stats_db_path_is_overridable(tmp_path, monkeypatch):
     assert config.daily_stats_db_path == "/var/lib/plane-tracker/stats.db"
 
 
+def test_special_aircraft_defaults_to_empty(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+
+    config = Config(write_yaml(tmp_path, VALID_YAML))
+
+    assert config.special_aircraft == []
+
+
+def test_special_aircraft_is_loaded(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+    content = VALID_YAML + (
+        "\nspecial_aircraft:\n"
+        "  - prefix: MEDIC\n"
+        "    name: OMSZ Helicopter\n"
+        "    is_helicopter: true\n"
+    )
+
+    config = Config(write_yaml(tmp_path, content))
+
+    assert config.special_aircraft == [
+        {"prefix": "MEDIC", "name": "OMSZ Helicopter", "is_helicopter": True}
+    ]
+
+
+def test_special_aircraft_entry_missing_prefix_raises(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+    content = VALID_YAML + "\nspecial_aircraft:\n  - name: OMSZ Helicopter\n"
+
+    with pytest.raises(ConfigError, match=r"special_aircraft\[0\] must have a 'prefix' and a 'name'"):
+        Config(write_yaml(tmp_path, content))
+
+
+def test_special_aircraft_entry_missing_name_raises(tmp_path, monkeypatch):
+    monkeypatch.setenv("HOME_LATITUDE", "47.5")
+    monkeypatch.setenv("HOME_LONGITUDE", "19.1")
+    content = VALID_YAML + "\nspecial_aircraft:\n  - prefix: MEDIC\n"
+
+    with pytest.raises(ConfigError, match=r"special_aircraft\[0\] must have a 'prefix' and a 'name'"):
+        Config(write_yaml(tmp_path, content))
+
+
 def test_missing_top_level_section_raises(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME_LATITUDE", "47.5")
     monkeypatch.setenv("HOME_LONGITUDE", "19.1")

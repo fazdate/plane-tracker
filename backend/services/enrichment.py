@@ -23,7 +23,8 @@ import time
 import httpx
 
 from services.data.airlines import airline_from_callsign, airline_iata_from_callsign
-from services.data.aircraft_types import aircraft_type_name
+from services.data.aircraft_types import aircraft_type_name, is_helicopter_type
+from services.data.special_aircraft import SpecialAircraftMatcher
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ def _shorten_airport_name(name: str | None) -> str | None:
 
 
 class EnrichmentService:
-    def __init__(self):
+    def __init__(self, special_aircraft: list[dict] | None = None):
         self._http = httpx.AsyncClient(
             timeout=8.0,
             headers={"User-Agent": "plane-tracker-hobby/1.0"},
@@ -65,6 +66,7 @@ class EnrichmentService:
         # icao24 -> (callsign, aircraft_type, computed_fields) so unchanged
         # aircraft skip re-doing the lookups every poll cycle.
         self._static_cache: dict[str, tuple[str | None, str | None, dict]] = {}
+        self._special_matcher = SpecialAircraftMatcher(special_aircraft)
 
     def enrich_static(self, ac: dict) -> None:
         """Add fields that need no network call (mutates ac in place)."""
@@ -77,10 +79,20 @@ class EnrichmentService:
             ac.update(cached[2])
             return
 
+        # Non-airline aircraft (military/police/EMS/etc.) are only matched
+        # when the callsign doesn't already resolve to a known airline, so a
+        # broad special-aircraft prefix (e.g. a single letter) never shadows
+        # a real 3-letter ICAO airline code.
+        airline = airline_from_callsign(callsign)
+        airline_iata = airline_iata_from_callsign(callsign) if airline else None
+        special = None if airline else self._special_matcher.match(callsign)
+
         computed = {
-            "airline": airline_from_callsign(callsign),
-            "airline_iata": airline_iata_from_callsign(callsign),
+            "airline": special["name"] if special else airline,
+            "airline_iata": airline_iata,
+            "airline_logo_url": special["logo_url"] if special else None,
             "aircraft_type_name": aircraft_type_name(ac_type),
+            "is_helicopter": (special["is_helicopter"] if special else False) or is_helicopter_type(ac_type),
         }
         ac.update(computed)
 
