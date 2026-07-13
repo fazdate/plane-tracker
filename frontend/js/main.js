@@ -6,10 +6,8 @@ import { animate } from "./animate.js";
 import { connect } from "./websocket.js";
 import { resetView } from "./camera.js";
 import { getLang, nextLang, onLangChange, applyStaticI18n } from "./i18n.js";
-import { applyInitialGuess } from "./theme.js";
 import { toggleWeather } from "./weather.js";
 
-applyInitialGuess(); // avoid a flash of the wrong theme before first data arrives
 requestAnimationFrame(animate);
 connect(applyData);
 

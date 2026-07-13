@@ -10,7 +10,7 @@ from services.alerts import AlertEngine
 from services.base_client import AircraftDataSource
 from services.daily_stats import DEFAULT_DB_PATH, DailyStats
 from services.enrichment import EnrichmentService
-from services.geo import BoundingBox, haversine_km, is_daytime
+from services.geo import BoundingBox, haversine_km
 
 logger = logging.getLogger("plane-tracker")
 
@@ -78,7 +78,6 @@ class AircraftTracker:
             "focused_icao": self.state["focused_icao"],
             "count": len(self.state["aircraft"]),
             "aircraft": self.state["aircraft"],
-            "is_daytime": is_daytime(self.home_lat, self.home_lon),
             "daily_count": self.daily_stats.count,
         }
 

@@ -10,25 +10,12 @@
   --text-dim: #b7c3d4;
 }
 
-/* Day theme: applied to <body> once the server tells us the sun is up at
-   the tracked location (see js/theme.js). Lightens the chrome; the map
-   filter below handles the imagery itself. */
-body.theme-day {
-  --bg: #cfe6ff;
-  --panel: rgba(235, 245, 255, 0.86);
-  --text: #0b1626;
-  --text-dim: #3d4c63;
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body { height: 100%; overflow: hidden; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
 
-#map { position: absolute; inset: 0; background: var(--bg); transition: filter 0.8s ease; }
-
-/* Satellite imagery itself doesn't change with time of day, so darken/cool
-   it at night to evoke the day/night switch instead. */
-body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
+/* Satellite imagery is darkened/cooled to keep it readable in the dark UI. */
+#map { position: absolute; inset: 0; background: var(--bg); filter: brightness(0.7) saturate(1.15) contrast(1.05); }
 
 /* Darkens the screen edges so UI chrome stays readable over bright/busy
    satellite imagery, without dimming the center of the view. */
@@ -135,9 +122,6 @@ body.theme-night #map { filter: brightness(0.7) saturate(1.15) contrast(1.05); }
   white-space: nowrap;
 }
 #status-count, #daily-count { color: var(--accent); font-weight: 700; }
-/* Cyan accent has poor contrast against the light day-theme panel; use a
-   darker shade there so the tracked-count text stays readable. */
-body.theme-day #status-count, body.theme-day #daily-count { color: #006c85; }
 
 /* Connection status dot */
 .conn-dot {

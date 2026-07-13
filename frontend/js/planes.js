@@ -4,7 +4,6 @@ import { state } from "./config.js";
 import { makePlaneIcon, classFor, fillFor } from "./planeIcon.js";
 import { updatePanel } from "./panel.js";
 import { processAlerts } from "./alerts.js";
-import { applyTheme } from "./theme.js";
 import { t } from "./i18n.js";
 
 // icao24 -> { marker, lat, lon, velocity, track, lastUpdate, cls, data }
@@ -104,7 +103,6 @@ export function applyData(data) {
   state.home = { lat: data.home.lat, lon: data.home.lon };
   setHomeLocation(data.home.lat, data.home.lon);
   setFocusRadiusKm(data.focus_radius_km);
-  applyTheme(data.is_daytime);
   if (data.focused_icao !== state.focusedIcao) {
     // New focus target (or focus cleared): a manual reset no longer applies.
     state.followSuppressed = false;

@@ -130,7 +130,6 @@ def test_build_payload_reflects_current_state():
     assert payload["focused_icao"] == "abc"
     assert payload["count"] == 1
     assert payload["aircraft"] == tracker.state["aircraft"]
-    assert isinstance(payload["is_daytime"], bool)
     assert payload["daily_count"] == 0  # nothing recorded via _refresh_once yet
 
 

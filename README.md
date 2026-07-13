@@ -4,7 +4,7 @@ A real-time aircraft tracker for a home location, built with a FastAPI backend
 and a vanilla-JS/Leaflet frontend. It polls a live ADS-B data source, computes
 distance from home, enriches aircraft with airline/type/route info, tracks the
 nearest ("focused") aircraft, and pushes updates to connected clients over a
-WebSocket. Includes day/night theming, live weather radar, alerting for
+WebSocket. Includes live weather radar, alerting for
 emergency squawks and uncommon aircraft types, and English/Hungarian i18n.
 
 ## Features
@@ -24,7 +24,6 @@ emergency squawks and uncommon aircraft types, and English/Hungarian i18n.
   with an in-browser banner, flash, and chime.
 - Smooth dead-reckoning interpolation between server updates, animated
   flight trails, and camera auto-follow on the focused aircraft.
-- Day/night theme based on the real sunrise/sunset time for the home location.
 - Live weather radar overlay (RainViewer) and aircraft photo lookup
   (Planespotters).
 - Daily aircraft counter: number of distinct aircraft tracked since local
