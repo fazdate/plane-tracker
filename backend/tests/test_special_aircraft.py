@@ -47,6 +47,15 @@ def test_match_returns_none_for_unmatched_callsign():
     assert matcher.match("WZZ123") is None
 
 
+def test_prefix_must_be_followed_by_digit_or_nothing():
+    matcher = SpecialAircraftMatcher(ENTRIES)
+    # "ROF123" merely starts with the "R" prefix's letter but isn't followed
+    # by a digit, so it must not be mistaken for Hungarian Police.
+    assert matcher.match("ROF123") is None
+    # An exact match with no trailing characters is still valid.
+    assert matcher.match("R")["name"] == "Hungarian Police"
+
+
 def test_match_returns_none_for_empty_callsign():
     matcher = SpecialAircraftMatcher(ENTRIES)
     assert matcher.match(None) is None

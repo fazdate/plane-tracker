@@ -35,7 +35,9 @@ filters:
 # prefix, case-insensitive, longest prefix wins; only checked as a fallback
 # for callsigns that don't already match a known airline. Add/edit entries
 # freely - no code changes needed.
-#   prefix:         callsign prefix to match, e.g. "MEDIC" matches "MEDIC01"
+#   prefix:         callsign prefix to match, e.g. "MEDIC" matches "MEDIC01";
+#                   the prefix must be immediately followed by a digit (or
+#                   nothing), so e.g. "R" matches "R05" but not "ROF123"
 #   name:           shown as the "airline" field in the UI
 #   logo_url:       optional direct link to a logo/picture for the info
 #                   panel; omit to show no logo (there's no IATA code to

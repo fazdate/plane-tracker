@@ -19,6 +19,12 @@ class SpecialAircraftMatcher:
     already matches a known airline (see airlines.py) should be checked
     against that first - this is only meant as a fallback for callsigns
     airlines.py doesn't recognize.
+
+    A prefix only matches if it's immediately followed by a digit (or
+    nothing else in the callsign). This prevents short prefixes from
+    matching unrelated callsigns that merely happen to start with the same
+    letters - e.g. the "R" prefix (Hungarian Police, callsigns like
+    "R05") must not match "ROF123" (Romanian Air Force).
     """
 
     def __init__(self, entries: list[dict] | None = None):
@@ -44,6 +50,10 @@ class SpecialAircraftMatcher:
             return None
         callsign = callsign.strip().upper()
         for entry in self._entries:
-            if entry["prefix"] and callsign.startswith(entry["prefix"]):
+            prefix = entry["prefix"]
+            if not prefix or not callsign.startswith(prefix):
+                continue
+            rest = callsign[len(prefix):]
+            if not rest or rest[0].isdigit():
                 return entry
         return None
