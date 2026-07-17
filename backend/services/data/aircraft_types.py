@@ -35,13 +35,16 @@ AIRCRAFT_TYPES: dict[str, str] = {
     "E290": "Embraer E190-E2", "E295": "Embraer E195-E2",
     # Regional / turboprop
     "AT72": "ATR 72", "AT76": "ATR 72-600", "AT75": "ATR 72-500",
+    "AT45": "ATR 42-500",
     "DH8D": "Bombardier Dash 8 Q400",
     "CRJ2": "Bombardier CRJ200", "CRJ7": "Bombardier CRJ700",
     "CRJ9": "Bombardier CRJ900",
     "SF34": "Saab 340", "SB20": "Saab 2000",
     "D328": "Dornier 328", "L410": "Let L-410 Turbolet",
     # Bizjets / GA
-    "C172": "Cessna 172", "C152": "Cessna 152",
+    "C172": "Cessna 172", "C152": "Cessna 152", "C182": "Cessna 182",
+    "PA28": "Piper PA-28 Cherokee", "PA34": "Piper PA-34 Seneca",
+    "SR20": "Cirrus SR20", "SR22": "Cirrus SR22",
     "C25A": "Cessna Citation CJ2", "C56X": "Cessna Citation Excel",
     "GLF6": "Gulfstream G650", "GLF5": "Gulfstream G550",
     "GLF4": "Gulfstream G450",

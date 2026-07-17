@@ -6,6 +6,7 @@ const DICTS = {
     labelAirline: "Airline",
     labelAircraft: "Aircraft",
     labelReg: "Reg",
+    labelSeen: "Seen",
     labelRoute: "Route",
     labelAltitude: "Altitude",
     labelSpeed: "Speed",
@@ -22,6 +23,8 @@ const DICTS = {
     dailyCount: (n) => `${n} airplanes tracked today`,
     dailyCountTitle: "Distinct aircraft tracked since midnight (local time)",
     photoOf: (reg) => `Photo of ${reg}`,
+    firstTimeSeen: "First time seen!",
+    timesSeen: (n) => `Seen ${n} times before`,
     routeUncertainTitle: "Route may be inaccurate - unverified against a second source",
     badgeLevel: {
       emergency: "EMERGENCY",
@@ -33,6 +36,7 @@ const DICTS = {
     labelAirline: "Légitársaság",
     labelAircraft: "Típus",
     labelReg: "Lajstromjel",
+    labelSeen: "Látva",
     labelRoute: "Útvonal",
     labelAltitude: "Magasság",
     labelSpeed: "Sebesség",
@@ -49,6 +53,8 @@ const DICTS = {
     dailyCount: (n) => `${n} repülőgép nyomon követve ma`,
     dailyCountTitle: "Éjfél (helyi idő) óta nyomon követett különböző repülőgépek száma",
     photoOf: (reg) => `Fénykép: ${reg}`,
+    firstTimeSeen: "Most látjuk először!",
+    timesSeen: (n) => `Korábban már ${n} alkalommal látva`,
     routeUncertainTitle: "Az útvonal pontatlan lehet - nem erősítette meg egy második forrás",
     badgeLevel: {
       emergency: "VÉSZHELYZET",

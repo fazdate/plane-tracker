@@ -161,6 +161,33 @@ def test_refresh_once_records_seen_aircraft_in_daily_stats():
     assert tracker.build_payload()["daily_count"] == 1
 
 
+def test_refresh_once_attaches_times_seen_to_focused_by_registration():
+    ac = make_aircraft("abc", HOME_LAT, HOME_LON)
+    ac["registration"] = "HA-LVK"
+    data_source = Mock(fetch_states=AsyncMock(return_value=[ac]))
+    enrichment = Mock(enrich_static=Mock(), get_route=AsyncMock(return_value=None))
+    tracker = make_tracker(data_source=data_source, enrichment=enrichment)
+
+    asyncio.run(tracker._refresh_once())
+    assert tracker.state["aircraft"][0]["times_seen"] == 1
+
+    # Seen again (e.g. next poll cycle, still today): still counts as 1
+    # distinct day so far.
+    asyncio.run(tracker._refresh_once())
+    assert tracker.state["aircraft"][0]["times_seen"] == 1
+
+
+def test_refresh_once_no_times_seen_without_registration():
+    ac = make_aircraft("abc", HOME_LAT, HOME_LON)
+    data_source = Mock(fetch_states=AsyncMock(return_value=[ac]))
+    enrichment = Mock(enrich_static=Mock(), get_route=AsyncMock(return_value=None))
+    tracker = make_tracker(data_source=data_source, enrichment=enrichment)
+
+    asyncio.run(tracker._refresh_once())
+
+    assert "times_seen" not in tracker.state["aircraft"][0]
+
+
 def test_refresh_once_does_not_fetch_route_when_nothing_focused():
     far = make_aircraft("far", HOME_LAT + 5, HOME_LON)
     data_source = Mock(fetch_states=AsyncMock(return_value=[far]))

@@ -11,6 +11,7 @@ from services.base_client import AircraftDataSource
 from services.daily_stats import DEFAULT_DB_PATH, DailyStats
 from services.enrichment import EnrichmentService
 from services.geo import BoundingBox, haversine_km
+from services.seen_history import SeenHistory
 
 logger = logging.getLogger("plane-tracker")
 
@@ -64,6 +65,9 @@ class AircraftTracker:
         self._consecutive_failures = 0
         self._cycles_on_fallback = 0
         self.daily_stats = DailyStats(daily_stats_db_path)
+        # Reuses the same DB file as daily_stats (different table), so no
+        # extra config is needed to enable this.
+        self.seen_history = SeenHistory(daily_stats_db_path)
 
         self.state = {
             "aircraft": [],
@@ -119,6 +123,7 @@ class AircraftTracker:
         raw = await self.data_source.fetch_states(self.box)
         aircraft, focused = self.process_aircraft(raw)
         self.daily_stats.record(a["icao24"] for a in aircraft)
+        self.seen_history.record(a.get("registration") for a in aircraft)
 
         if focused:
             focused["route"] = await self.enrichment.get_route(
@@ -127,6 +132,8 @@ class AircraftTracker:
                 home_iata=self.home_airport_iata,
                 max_altitude_m=self.route_sanity_max_altitude_m,
             )
+            if focused.get("registration"):
+                focused["times_seen"] = self.seen_history.count(focused["registration"])
 
         focused_icao = focused["icao24"] if focused else None
         self.state["aircraft"] = aircraft

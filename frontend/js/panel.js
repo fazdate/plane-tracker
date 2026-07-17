@@ -113,6 +113,19 @@ export function updatePanel(ac) {
     ? (regFlag ? `${regFlag} ${ac.registration}` : ac.registration)
     : "—";
 
+  // "Seen before" line: only shown when we actually have a seen-count for
+  // this registration (i.e. the backend recognizes it), so the row stays
+  // hidden entirely for aircraft where it can't be computed instead of
+  // showing a confusing "—". A count of 1 means today is the first time.
+  const seenRow = document.getElementById("info-row-seen");
+  if (ac.registration && ac.times_seen != null) {
+    seenRow.classList.remove("hidden");
+    document.getElementById("info-seen").textContent =
+      ac.times_seen <= 1 ? t("firstTimeSeen") : t("timesSeen", ac.times_seen - 1);
+  } else {
+    seenRow.classList.add("hidden");
+  }
+
   // Route - kept on a single line (like every other row) so it always
   // lines up with its label; long names are ellipsis-truncated in CSS with
   // the full text available via the title tooltip.

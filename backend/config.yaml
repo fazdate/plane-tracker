@@ -77,6 +77,19 @@ alerts:
     - A321
     - A20N
     - A21N
+    - BCS1
+    - BCS3
+    - E170
+    - E175
+    - E190
+    - E195
+    - CRJ2
+    - CRJ7
+    - CRJ9
+    - C152
+    - C172
+    - C182
+    - PA28
   emergency_squawks:
     - "7500"
     - "7600"
