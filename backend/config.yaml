@@ -40,8 +40,12 @@ filters:
 #                   nothing), so e.g. "R" matches "R05" but not "ROF123"
 #   name:           shown as the "airline" field in the UI
 #   logo_url:       optional direct link to a logo/picture for the info
-#                   panel; omit to show no logo (there's no IATA code to
-#                   look one up by for these)
+#                   panel; must point straight at the image file itself
+#                   (e.g. an upload.wikimedia.org URL), not a Wikipedia/
+#                   Commons "File:" page - the frontend sets this as an
+#                   <img> src as-is, so an HTML page there fails to load
+#                   silently. Omit to show no logo (there's no IATA code
+#                   to look one up by for these)
 #   is_helicopter:  optional, defaults to false; forces the helicopter map
 #                   icon on even if the reported aircraft type isn't
 #                   recognized as a helicopter (see aircraft_types.py)
@@ -49,20 +53,20 @@ special_aircraft:
   - prefix: MEDIC
     name: OMSZ Helicopter
     is_helicopter: true
-    logo_url: https://hu.wikipedia.org/wiki/F%C3%A1jl:Insignia_Hungary_OMSZ_v1.svg
+    logo_url: https://upload.wikimedia.org/wikipedia/commons/3/34/Insignia_Hungary_OMSZ_v1.svg
   - prefix: NARVL
     name: Hungarian Air Force
-    logo_url: https://hu.wikipedia.org/wiki/F%C3%A1jl:Roundel_of_Hungary.svg
+    logo_url: https://upload.wikimedia.org/wikipedia/commons/4/42/Roundel_of_Hungary.svg
   - prefix: R
     name: Hungarian Police
-    logo_url: https://commons.wikimedia.org/wiki/File:Insignia_Hungary_Police.svg
+    logo_url: https://upload.wikimedia.org/wikipedia/commons/7/71/Insignia_Hungary_Police.svg
     is_helicopter: true
   - prefix: HUF
     name: Hungarian Air Force
-    logo_url: https://hu.wikipedia.org/wiki/F%C3%A1jl:Roundel_of_Hungary.svg
+    logo_url: https://upload.wikimedia.org/wikipedia/commons/4/42/Roundel_of_Hungary.svg
   - prefix: RCH
     name: U.S. Air Force
-    logo_url: https://commons.wikimedia.org/wiki/File:US_Air_Force_Logo_Solid_Colour.svg
+    logo_url: https://upload.wikimedia.org/wikipedia/commons/0/06/US_Air_Force_Logo_Solid_Colour.svg
 
 alerts:
   common_types:

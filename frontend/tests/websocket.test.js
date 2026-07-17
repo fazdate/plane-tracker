@@ -110,4 +110,44 @@ describe("connect", () => {
     ws.onerror();
     expect(ws.closed).toBe(true);
   });
+
+  it("reloads the page if the connection stays unhealthy for too long", async () => {
+    const reloadSpy = vi.fn();
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { ...window.location, reload: reloadSpy },
+    });
+    const { connect } = await freshWebsocket();
+    connect(() => {});
+
+    // Socket never opens and keeps failing to reconnect; time marches on
+    // without a single successful open or message.
+    vi.advanceTimersByTime(2 * 60 * 1000 - 5000);
+    expect(reloadSpy).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(10000);
+    expect(reloadSpy).toHaveBeenCalled();
+  });
+
+  it("does not reload while messages keep arriving, even if the socket flaps", async () => {
+    const reloadSpy = vi.fn();
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { ...window.location, reload: reloadSpy },
+    });
+    const { connect } = await freshWebsocket();
+    connect(() => {});
+
+    const ws = FakeWebSocket.instances[0];
+    ws.onopen();
+
+    // Keep the connection "healthy" by receiving messages faster than the
+    // reload threshold, well past when a naive check would have fired.
+    for (let i = 0; i < 5; i++) {
+      vi.advanceTimersByTime(60 * 1000);
+      ws.onmessage({ data: "{}" });
+    }
+
+    expect(reloadSpy).not.toHaveBeenCalled();
+  });
 });

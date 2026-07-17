@@ -14,8 +14,23 @@ function setStatus(s) {
 const RECONNECT_BASE_MS = 1000;
 const RECONNECT_MAX_MS = 30000;
 
+// Health self-heal: kiosk tablets can't be manually refreshed, so if we've
+// gone this long without hearing from the backend (repeated reconnect
+// failures, a hung socket, etc.) just reload the whole page. A fresh load
+// clears out any stuck app state and starts the reconnect cycle from zero.
+const RELOAD_AFTER_MS = 2 * 60 * 1000;
+const HEALTH_CHECK_INTERVAL_MS = 5000;
+
 export function connect(onData) {
   let reconnectDelay = RECONNECT_BASE_MS;
+  let lastOnlineAt = Date.now();
+
+  setInterval(() => {
+    if (Date.now() - lastOnlineAt > RELOAD_AFTER_MS) {
+      console.warn(`No connection for over ${RELOAD_AFTER_MS}ms, reloading page...`);
+      location.reload();
+    }
+  }, HEALTH_CHECK_INTERVAL_MS);
 
   function open() {
     setStatus("connecting");
@@ -23,8 +38,10 @@ export function connect(onData) {
     ws.onopen = () => {
       setStatus("online");
       reconnectDelay = RECONNECT_BASE_MS;
+      lastOnlineAt = Date.now();
     };
     ws.onmessage = (e) => {
+      lastOnlineAt = Date.now();
       try { onData(JSON.parse(e.data)); }
       catch (err) { console.error("Bad message", err); }
     };
